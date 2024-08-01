@@ -10,6 +10,7 @@ services:
       - server
     volumes:
       - ./client:/opt/app
+      - ./client/vite.config.docker.ts:/opt/app/vite.config.ts
       - node_modules_client:/opt/app/node_modules
 
   server:
