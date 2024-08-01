@@ -6,6 +6,7 @@ import AccountPage from './components/pages/AccountPage';
 import LoginPage from './components/pages/LoginPage';
 
 function App(): JSX.Element {
+
   const router = createBrowserRouter([
     {
       path: '/',
