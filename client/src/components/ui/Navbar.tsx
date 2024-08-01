@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   Box,
   Flex,
@@ -19,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import useAuth from '../hooks/useAuth';
 
 type Props = {
   children: React.ReactNode;
@@ -48,6 +48,11 @@ function Nlink(props: Props): JSX.Element {
 
 export default function NavBar(): JSX.Element {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4} boxShadow="dark-lg">
@@ -62,7 +67,9 @@ export default function NavBar(): JSX.Element {
         <HStack spacing={8} alignItems="center">
           <Box>Logo</Box>
           <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
-            <NavLink to="/">main</NavLink>
+            <NavLink to="/">Main</NavLink>
+            <NavLink to="/login">Login</NavLink>
+            <NavLink to="/signup">Sign Up</NavLink>
           </HStack>
         </HStack>
         <Flex alignItems="center">
@@ -73,11 +80,11 @@ export default function NavBar(): JSX.Element {
                 src="https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
               />
             </MenuButton>
-            <Button>Logout</Button>
             <MenuList>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuDivider />
               <MenuItem>Link 1</MenuItem>
               <MenuItem>Link 2</MenuItem>
-              <MenuDivider />
               <MenuItem>Link 3</MenuItem>
             </MenuList>
           </Menu>
@@ -87,9 +94,9 @@ export default function NavBar(): JSX.Element {
       {isOpen ? (
         <Box pb={4} display={{ md: 'none' }}>
           <Stack as="nav" spacing={4}>
-            {Links.map((link) => (
-              <Nlink key={link}>{link}</Nlink>
-            ))}
+            <NavLink to="/">Main</NavLink>
+            <NavLink to="/login">Login</NavLink>
+            <NavLink to="/signup">Sign Up</NavLink>
           </Stack>
         </Box>
       ) : null}

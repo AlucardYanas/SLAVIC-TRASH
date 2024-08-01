@@ -4,6 +4,7 @@ import MainPage from './components/pages/MainPage';
 import Layout from './components/Layout';
 import AccountPage from './components/pages/AccountPage';
 import LoginPage from './components/pages/LoginPage';
+import SignUpPage from './components/pages/SignUnPage';
 
 function App(): JSX.Element {
 
@@ -25,6 +26,14 @@ function App(): JSX.Element {
           element: (
             // <ProtectedRouter isAllowed={user.status === 'guest'}>
               <LoginPage />
+            // </ProtectedRouter>
+          ),
+        },
+        {
+          path: '/signin',
+          element: (
+            // <ProtectedRouter isAllowed={user.status === 'guest'}>
+              <SignUpPage />
             // </ProtectedRouter>
           ),
         },
