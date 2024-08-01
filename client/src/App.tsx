@@ -30,7 +30,7 @@ function App(): JSX.Element {
           ),
         },
         {
-          path: '/signin',
+          path: '/signup',
           element: (
             // <ProtectedRouter isAllowed={user.status === 'guest'}>
               <SignUpPage />
