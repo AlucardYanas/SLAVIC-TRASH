@@ -1,8 +1,14 @@
 import create from 'zustand';
-import type { StateCreator } from 'zustand'
+import type { StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
-import axiosInstance, { setAccessToken } from '../API/axiosInstance';
-import type { UserType, UserSignInType, UserSignUpType, UserFromBackendType, UserStateType } from '../types';
+import axiosInstance, { setAccessToken } from '../components/API/axiosInstance';
+import type {
+  UserType,
+  UserSignInType,
+  UserSignUpType,
+  UserFromBackendType,
+  UserStateType,
+} from '../types/types';
 
 type AuthState = {
   user: UserStateType | null;
@@ -13,18 +19,17 @@ type AuthState = {
   logout: () => Promise<void>;
 };
 
-const authState: StateCreator<
-  AuthState,
-  [['zustand/persist', AuthState]],
-  []
-> = (set) => ({
+const authState: StateCreator<AuthState, [['zustand/persist', AuthState]], []> = (set) => ({
   user: { status: 'guest' } as UserStateType,
   isLoading: false,
   error: null,
   login: async (email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.post<UserFromBackendType>('/auth/signin', { email, password } as UserSignInType);
+      const response = await axiosInstance.post<UserFromBackendType>('/auth/signin', {
+        email,
+        password,
+      } as UserSignInType);
       const { accessToken, user } = response.data;
       setAccessToken(accessToken);
       set({ user: { status: 'logged', ...user }, isLoading: false });
@@ -36,7 +41,11 @@ const authState: StateCreator<
   signup: async (name: string, email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.post<UserFromBackendType>('/auth/signup', { name, email, password } as UserSignUpType);
+      const response = await axiosInstance.post<UserFromBackendType>('/auth/signup', {
+        name,
+        email,
+        password,
+      } as UserSignUpType);
       const { accessToken, user } = response.data;
       setAccessToken(accessToken);
       set({ user: { status: 'logged', ...user }, isLoading: false });
@@ -61,7 +70,7 @@ const useAuthStore = create<AuthState>(
   persist(authState, {
     name: 'auth-storage',
     getStorage: () => localStorage,
-  })
+  }),
 );
 
 export default useAuthStore;

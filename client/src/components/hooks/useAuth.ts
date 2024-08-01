@@ -1,4 +1,4 @@
-import useAuthStore from '../store/authStore';
+import useAuthStore from '../../store/authStore';
 import type { UserStateType } from '../../types/types';
 
 type AuthHook = {
