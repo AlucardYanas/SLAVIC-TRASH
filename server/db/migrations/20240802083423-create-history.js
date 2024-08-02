@@ -1,11 +1,7 @@
-/* eslint-disable no-unused-vars */
-
-'use strict';
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('UserVideos', {
+    await queryInterface.createTable('Histories', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,6 +10,7 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'Users',
           key: 'id',
@@ -23,6 +20,7 @@ module.exports = {
       },
       videoId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'Videos',
           key: 'id',
@@ -41,6 +39,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('UserVideos');
+    await queryInterface.dropTable('Histories');
   },
 };

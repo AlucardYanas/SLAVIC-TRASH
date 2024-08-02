@@ -3,23 +3,23 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class UserVideo extends Model {
+  class WatchedVideo extends Model {
     static associate(models) {
-      UserVideo.belongsTo(models.User, { foreignKey: 'userId' });
-      UserVideo.belongsTo(models.Video, { foreignKey: 'videoId' });
+      WatchedVideo.belongsTo(models.User, { foreignKey: 'userId' });
+      WatchedVideo.belongsTo(models.Video, { foreignKey: 'videoId' });
     }
   }
 
-  UserVideo.init(
+  WatchedVideo.init(
     {
       userId: DataTypes.INTEGER,
       videoId: DataTypes.INTEGER,
     },
     {
       sequelize,
-      modelName: 'UserVideo',
+      modelName: 'WatchedVideo',
     },
   );
 
-  return UserVideo;
+  return WatchedVideo;
 };
