@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Flex, VStack, Box, Text, Alert, AlertIcon } from '@chakra-ui/react';
 import AdminModal from '../ui/AdminModal';
-import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation } from '../../redux/slices/uploadVideoSlice';
+import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation } from '../../redux/upload/uploadSlice';
 import type { VideoType } from '../../types/types';
 
 export default function AdminPage(): JSX.Element {
-  const { data: pendingVideos, refetch, error } = useGetPendingVideosQuery();
+  const { data: pendingVideos = [], refetch, error } = useGetPendingVideosQuery();
   const [approveVideo] = useApproveVideoMutation();
   const [disapproveVideo] = useDisapproveVideoMutation();
   const [selectedVideo, setSelectedVideo] = useState<VideoType | null>(null);
@@ -14,7 +14,7 @@ export default function AdminPage(): JSX.Element {
   useEffect(() => {
     if (error) {
       setAlertMessage('Ошибка при получении видео');
-    } else if (pendingVideos?.message === 'No new videos for approval') {
+    } else if (pendingVideos.length === 0) {
       setAlertMessage('Нет новых видео для одобрения');
     } else {
       setAlertMessage(null);
@@ -45,7 +45,7 @@ export default function AdminPage(): JSX.Element {
           </Alert>
         )}
         <VStack spacing={4} width="100%">
-          {pendingVideos?.map((video: VideoType) => (
+          {pendingVideos.map((video: VideoType) => (
             <Box key={video.id} p={4} borderWidth="1px" borderRadius="lg" width="100%" onClick={() => setSelectedVideo(video)}>
               <Text>{video.title}</Text>
             </Box>

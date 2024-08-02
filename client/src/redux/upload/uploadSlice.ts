@@ -17,6 +17,15 @@ export const uploadVideoApi = createApi({
     }),
     getPendingVideos: builder.query<VideoType[], void>({
       query: () => '/admin/pending',
+      transformResponse: (response: { message?: string } | VideoType[]) => {
+        if (Array.isArray(response)) {
+          return response;
+        }
+        if (response.message === 'No new videos for approval') {
+          return [];
+        }
+        throw new Error('Unexpected response format');
+      },
       providesTags: [{ type: 'PendingVideo', id: 'LIST' }],
     }),
     approveVideo: builder.mutation<VideoType, { id: number; tags: string[] }>({
