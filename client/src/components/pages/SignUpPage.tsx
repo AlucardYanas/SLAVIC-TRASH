@@ -1,5 +1,15 @@
 import React from 'react';
-import { Box, Button, Flex, FormControl, FormLabel, Input, Text, useColorModeValue, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Input,
+  Text,
+  useColorModeValue,
+  VStack,
+} from '@chakra-ui/react';
 import useAuth from '../hooks/useAuth';
 
 export default function SignUpPage(): JSX.Element {

@@ -43,7 +43,7 @@ const authSlice = createSlice({
     builder.addCase(logoutThunk.fulfilled, (state) => {
       state.accessToken = '';
       state.user = { status: 'guest' };
-    })
+    });
   },
 });
 

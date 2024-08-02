@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { z } from 'zod';
 
-
 export const VideoSchema = z.object({
   title: z.string(),
   link: z.string(),
