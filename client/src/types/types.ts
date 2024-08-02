@@ -16,6 +16,7 @@ export type UserType = {
   id: number;
   username: string;
   email: string;
+  isAdmin: boolean;
 };
 
 export type UserSignUpType = Omit<UserType, 'id'> & { password: string };
@@ -25,4 +26,5 @@ export type UserFromBackendType = { accessToken: string; user: UserType };
 export type UserStateType =
   | { status: 'fetching' }
   | { status: 'guest' }
+  | { status: 'admin' }
   | ({ status: 'logged' } & UserType);

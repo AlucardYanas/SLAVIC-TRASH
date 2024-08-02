@@ -24,22 +24,24 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(signUpThunk.fulfilled, (state, { payload }) => {
       state.accessToken = payload.accessToken;
-      state.user = { status: 'logged', ...payload.user };
+      state.user = { status: payload.user.isAdmin ? 'admin' : 'logged', ...payload.user };
     });
 
     builder.addCase(signInThunk.fulfilled, (state, { payload }) => {
       state.accessToken = payload.accessToken;
-      state.user = { status: 'logged', ...payload.user };
+      state.user = { status: payload.user.isAdmin ? 'admin' : 'logged', ...payload.user };
     });
 
     builder.addCase(checkUserThunk.fulfilled, (state, { payload }) => {
       state.accessToken = payload.accessToken;
-      state.user = { status: 'logged', ...payload.user };
+      state.user = { status: payload.user.isAdmin ? 'admin' : 'logged', ...payload.user };
     });
+
     builder.addCase(checkUserThunk.rejected, (state) => {
       state.accessToken = '';
       state.user = { status: 'guest' };
     });
+
     builder.addCase(logoutThunk.fulfilled, (state) => {
       state.accessToken = '';
       state.user = { status: 'guest' };
