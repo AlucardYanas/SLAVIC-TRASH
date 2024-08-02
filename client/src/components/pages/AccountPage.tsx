@@ -1,8 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Checkbox, Container, Flex, VStack, Button } from '@chakra-ui/react';
 import VideoModal from '../ui/VideoModal';
+import { useUploadVideoMutation } from '../../redux/update/updateSlice';
+
 
 export default function AccountPage(): JSX.Element {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadVideo, { isLoading }] = useUploadVideoMutation();
+
+  // Обработчик выбора файла
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+      const formData = new FormData();
+      formData.append('video', event.target.files[0]);
+
+      try {
+        await uploadVideo(formData).unwrap();
+        alert('Video uploaded successfully');
+      } catch (error) {
+        console.error('Upload failed:', error);
+        alert('Failed to upload video');
+      }
+    }
+  };
+
   return (
     <Container maxW="container.xl" p={4} position="relative">
       {/* Верхняя кнопка истории просмотров */}
@@ -10,9 +32,26 @@ export default function AccountPage(): JSX.Element {
         История просмотров
       </Button>
 
-      <Button position="absolute" top={4} right={4} colorScheme="teal" variant="solid">
+      {/* Кнопка загрузки видео */}
+      <Button
+        position="absolute"
+        top={4}
+        right={4}
+        colorScheme="teal"
+        variant="solid"
+        onClick={() => document.getElementById('fileInput')?.click()}
+      >
         Загрузить видео
       </Button>
+
+      {/* Скрытое поле для выбора файлов */}
+      <input
+        id="fileInput"
+        type="file"
+        accept="video/*"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
 
       <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
         {/* Левый блок с чекбоксами для фильтрации */}

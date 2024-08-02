@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Маршрут для загрузки видео
-router.post('/upload', upload.single('video'), async (req, res) => {
+router.post('/', upload.single('video'), async (req, res) => {
   try {
     const { title } = req.body;
     const videoPath = req.file.path;
