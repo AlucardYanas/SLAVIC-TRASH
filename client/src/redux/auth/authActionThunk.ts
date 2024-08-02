@@ -13,8 +13,9 @@ export const signUpThunk = createAsyncThunk<UserFromBackendType, UserSignUpType>
   async (userData) => authService.authSignUp(userData),
 );
 
-export const logoutThunk = createAsyncThunk<AxiosResponse>('auth/logout', async () =>
-  authService.logout(),
+export const logoutThunk = createAsyncThunk<number>(
+  'auth/logout',
+  async () =>  (await authService.logout()).status,
 );
 
 export const checkUserThunk = createAsyncThunk<UserFromBackendType>(

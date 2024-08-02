@@ -6,14 +6,15 @@ import AccountPage from './components/pages/AccountPage';
 import LoginPage from './components/pages/LoginPage';
 import SignUpPage from './components/pages/SignUpPage';
 import { checkUserThunk } from './redux/auth/authActionThunk';
-import { useAppDispatch } from './components/hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from './components/hooks/reduxHooks';
+import ProtectedRouter from './components/HOCs/ProtectedRouter';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
   useEffect(() => {
     void dispatch(checkUserThunk());
   }, []);
-
+  const user = useAppSelector((state) => state.auth.user);
   const router = createBrowserRouter([
     {
       path: '/',
@@ -25,22 +26,26 @@ function App(): JSX.Element {
         },
         {
           path: '/account',
-          element: <AccountPage />,
+          element: (
+            <ProtectedRouter isAllowed={user.status === 'logged'}>
+              <AccountPage />
+            </ProtectedRouter>
+          ),
         },
         {
           path: '/login',
           element: (
-            // <ProtectedRouter isAllowed={user.status === 'guest'}>
-            <LoginPage />
-            // </ProtectedRouter>
+            <ProtectedRouter isAllowed={user.status === 'guest'}>
+              <LoginPage />
+            </ProtectedRouter>
           ),
         },
         {
           path: '/signup',
           element: (
-            // <ProtectedRouter isAllowed={user.status === 'guest'}>
-            <SignUpPage />
-            // </ProtectedRouter>
+            <ProtectedRouter isAllowed={user.status === 'guest'}>
+              <SignUpPage />
+            </ProtectedRouter>
           ),
         },
       ],
