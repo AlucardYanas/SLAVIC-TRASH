@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Checkbox, Container, Flex, VStack, Button, Input, Box } from '@chakra-ui/react';
 import VideoModal from '../ui/VideoModal';
-import { useUploadVideoMutation } from '../../redux/update/updateSlice';
+import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
+
 
 export default function AccountPage(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
-const { Video } = require('../../db/models');
+const { UploadVideo } = require('../../db/models/');
 
 const router = express.Router();
 
@@ -36,9 +36,14 @@ router.post('/', upload.single('video'), async (req, res) => {
       const length = Math.floor(metadata.format.duration);
 
       // Сохранение информации о видео в базе данных (временная запись)
-      const video = await Video.create({ title, videoPath, length, approved: false });
+      const uploadVideo = await UploadVideo.create({
+        title,
+        videoPath,
+        length,
+        approved: false,
+      });
 
-      res.status(201).json({ message: 'Video uploaded successfully', video });
+      res.status(201).json({ message: 'Video uploaded successfully', uploadVideo });
     });
   } catch (error) {
     console.error(error);
