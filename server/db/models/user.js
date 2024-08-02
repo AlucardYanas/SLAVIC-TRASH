@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
           this.setDataValue('password', bcrypt.hashSync(value, 10));
         },
       },
-      name: DataTypes.STRING,
+      username: DataTypes.STRING,
       isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,

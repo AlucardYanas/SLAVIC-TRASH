@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 const { Router } = require('express');
 const bcrypt = require('bcrypt');
 const { User } = require('../../db/models');
 const generateTokens = require('../utils/generateTokens');
 const cookiesConfig = require('../../config/cookiesConfig');
-
 const router = Router();
 
 router.post('/signup', async (req, res) => {

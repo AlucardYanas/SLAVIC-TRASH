@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Video.init(
     {
-      name: DataTypes.STRING,
+      title: DataTypes.STRING,
       link: DataTypes.STRING,
       length: DataTypes.INTEGER,
       tags: DataTypes.ARRAY(DataTypes.STRING),

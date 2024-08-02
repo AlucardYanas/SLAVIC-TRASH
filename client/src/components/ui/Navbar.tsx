@@ -48,11 +48,7 @@ function Nlink(props: Props): JSX.Element {
 
 export default function NavBar(): JSX.Element {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { logout } = useAuth();
-
-  const handleLogout = async () => {
-    await logout();
-  };
+  const { logoutHandler } = useAuth();
 
   return (
     <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4} boxShadow="dark-lg">
@@ -81,7 +77,7 @@ export default function NavBar(): JSX.Element {
               />
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem onClick={logoutHandler}>Logout</MenuItem>
               <MenuDivider />
               <MenuItem>Link 1</MenuItem>
               <MenuItem>Link 2</MenuItem>

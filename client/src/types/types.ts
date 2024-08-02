@@ -1,7 +1,7 @@
 import type { z } from 'zod';
-import type { VideoSchema } from '../utils/validators';
+// import type { VideoSchema } from '../utils/validators';
 
-export type VideoType = z.infer<typeof VideoSchema>;
+// export type VideoType = z.infer<typeof VideoSchema>;
 
 export type LikeType = {
   userId: number;
@@ -14,12 +14,12 @@ export type UserVideoType = {
 
 export type UserType = {
   id: number;
-  username: string;
+  name: string;
   email: string;
 };
 
 export type UserSignUpType = Omit<UserType, 'id'> & { password: string };
-export type UserSignInType = Omit<UserSignUpType, 'username'>;
+export type UserSignInType = Omit<UserSignUpType, 'name'>;
 export type UserFromBackendType = { accessToken: string; user: UserType };
 
 export type UserStateType =
