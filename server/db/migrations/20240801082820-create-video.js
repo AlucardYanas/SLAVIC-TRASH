@@ -13,6 +13,9 @@ module.exports = {
       title: {
         type: Sequelize.STRING,
       },
+      videoPath: {
+        type: Sequelize.STRING,
+      },
       link: {
         type: Sequelize.STRING,
       },
@@ -21,6 +24,13 @@ module.exports = {
       },
       tags: {
         type: Sequelize.ARRAY(Sequelize.STRING),
+      },
+      approved: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      thumbnailPath: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -32,7 +42,6 @@ module.exports = {
       },
     });
   },
-  // eslint-disable-next-line no-unused-vars
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Videos');
   },

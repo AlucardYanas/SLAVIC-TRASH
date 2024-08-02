@@ -13,9 +13,15 @@ module.exports = (sequelize, DataTypes) => {
   Video.init(
     {
       title: DataTypes.STRING,
+      videoPath: DataTypes.STRING,
       link: DataTypes.STRING,
       length: DataTypes.INTEGER,
       tags: DataTypes.ARRAY(DataTypes.STRING),
+      approved: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      thumbnailPath: DataTypes.STRING,  // Добавлено поле для хранения пути к превьюшке
     },
     {
       sequelize,
