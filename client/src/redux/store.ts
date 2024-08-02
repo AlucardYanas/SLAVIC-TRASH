@@ -1,9 +1,8 @@
-// redux/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import { videosApi } from './apiSlice';
 import authSlice from './auth/authSlice';
-import { viewHistoryApi } from './slices/viewHistorySlice';
-import { uploadVideoApi } from './slices/uploadVideoSlice';
+import { viewHistoryApi } from '../redux/like/likeSlice';
+import { uploadVideoApi } from '../redux/update/updateSlice';
 
 export const store = configureStore({
   reducer: {
