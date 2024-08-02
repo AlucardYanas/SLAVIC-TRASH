@@ -10,6 +10,10 @@ export default function AccountPage(): JSX.Element {
         История просмотров
       </Button>
 
+      <Button position="absolute" top={4} right={4} colorScheme="teal" variant="solid">
+        Загрузить видео
+      </Button>
+
       <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
         {/* Левый блок с чекбоксами для фильтрации */}
         <VStack align="start" spacing={10}>

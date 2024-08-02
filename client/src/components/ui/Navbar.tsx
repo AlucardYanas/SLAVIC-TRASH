@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Flex,
@@ -6,25 +6,18 @@ import {
   Button,
   useColorModeValue,
   IconButton,
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
+  Collapse,
   useDisclosure,
-  VStack
 } from '@chakra-ui/react';
-import { HamburgerIcon } from '@chakra-ui/icons';
 import { NavLink } from 'react-router-dom';
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import useAuth from '../hooks/useAuth';
 import { useAppSelector } from '../hooks/reduxHooks';
 
 export default function NavBar(): JSX.Element {
   const { logoutHandler } = useAuth();
   const user = useAppSelector((state) => state.auth.user);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onToggle } = useDisclosure();
 
   return (
     <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4} boxShadow="dark-lg">
@@ -40,43 +33,50 @@ export default function NavBar(): JSX.Element {
                 <NavLink to="/signup">Sign Up</NavLink>
               </>
             )}
+            {user.status === 'admin' && <NavLink to="/admin">AdminPanel</NavLink>}
           </HStack>
         </HStack>
         <Flex alignItems="center">
+          <IconButton
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+            display={{ md: 'none' }}
+            onClick={onToggle}
+          />
           <Button colorScheme="red" onClick={logoutHandler}>
             Logout
           </Button>
-          <IconButton
-            aria-label="Open Menu"
-            icon={<HamburgerIcon />}
-            display={{ base: 'inline-flex', md: 'none' }}
-            onClick={onOpen}
-          />
         </Flex>
       </Flex>
 
-      <Drawer placement="top" onClose={onClose} isOpen={isOpen}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Menu</DrawerHeader>
-          <DrawerBody>
-            <VStack spacing={4} align="start">
-              <NavLink to="/" onClick={onClose}>Main</NavLink>
-              {user.status === 'logged' && <NavLink to="/account" onClick={onClose}>Account</NavLink>}
-              {user.status === 'guest' && (
-                <>
-                  <NavLink to="/login" onClick={onClose}>Login</NavLink>
-                  <NavLink to="/signup" onClick={onClose}>Sign Up</NavLink>
-                </>
-              )}
-            </VStack>
-          </DrawerBody>
-          <DrawerFooter>
-            <Button colorScheme="red" onClick={logoutHandler}>Logout</Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <Collapse in={isOpen} animateOpacity>
+        <Flex
+          direction="column"
+          display={{ base: 'flex', md: 'none' }}
+          p={4}
+          borderBottomWidth={1}
+          borderColor={useColorModeValue('gray.200', 'gray.700')}
+        >
+          <NavLink to="/" onClick={onToggle}>
+            Main
+          </NavLink>
+          {user.status === 'logged' && (
+            <NavLink to="/account" onClick={onToggle}>
+              Account
+            </NavLink>
+          )}
+          {user.status === 'guest' && (
+            <>
+              <NavLink to="/login" onClick={onToggle}>
+                Login
+              </NavLink>
+              <NavLink to="/signup" onClick={onToggle}>
+                Sign Up
+              </NavLink>
+            </>
+          )}
+        </Flex>
+      </Collapse>
     </Box>
   );
 }

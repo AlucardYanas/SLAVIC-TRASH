@@ -8,6 +8,7 @@ import SignUpPage from './components/pages/SignUpPage';
 import { checkUserThunk } from './redux/auth/authActionThunk';
 import { useAppDispatch, useAppSelector } from './components/hooks/reduxHooks';
 import ProtectedRouter from './components/HOCs/ProtectedRouter';
+import AdminPage from './components/pages/AdminPage';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -27,7 +28,7 @@ function App(): JSX.Element {
         {
           path: '/account',
           element: (
-            <ProtectedRouter isAllowed={user.status === 'logged'}>
+            <ProtectedRouter isAllowed={user.status === 'logged' || user.status === 'admin'}>
               <AccountPage />
             </ProtectedRouter>
           ),
@@ -45,6 +46,14 @@ function App(): JSX.Element {
           element: (
             <ProtectedRouter isAllowed={user.status === 'guest'}>
               <SignUpPage />
+            </ProtectedRouter>
+          ),
+        },
+        {
+          path: '/admin',
+          element: (
+            <ProtectedRouter isAllowed={user.status === 'admin'}>
+              <AdminPage />
             </ProtectedRouter>
           ),
         },
