@@ -12,15 +12,15 @@ const storage = multer.diskStorage({
     cb(null, 'public/uploads'); // Промежуточная папка для загруженных видео
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`); // Уникальное имя файла
-  }
+  },
 });
 
 const upload = multer({ storage });
 
 // Маршрут для загрузки видео
-router.post('/upload', upload.single('video'), async (req, res) => {
+router.post('/', upload.single('video'), async (req, res) => {
   try {
     const { title } = req.body;
     const videoPath = req.file.path;
@@ -33,7 +33,7 @@ router.post('/upload', upload.single('video'), async (req, res) => {
         return res.status(500).json({ error: 'Failed to process video' });
       }
 
-      const length = metadata.format.duration;
+      const length = Math.floor(metadata.format.duration);
 
       // Сохранение информации о видео в базе данных (временная запись)
       const video = await Video.create({ title, videoPath, length, approved: false });
