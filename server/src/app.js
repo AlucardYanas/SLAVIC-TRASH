@@ -5,11 +5,11 @@ const morgan = require('morgan');
 const authRouter = require('./routes/authRouter');
 const tokensRouter = require('./routes/tokensRouter');
 const path = require('path');
-const videoRoutes = require('./routes/videoRoutes');
-const uploadRoutes = require('./routes/uploadRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const watchedVideoRoutes = require('./routes/watchedVideoRoutes');
-const historyRoutes = require('./routes/historyRoutes');
+const videoRouter = require('./routes/videoRouter');
+const uploadRouter = require('./routes/uploadRouter');
+const adminRouter = require('./routes/adminRouter');
+const watchedVideoRouter = require('./routes/watchedVideoRouter');
+const historyRouter = require('./routes/historyRouter');
 
 const app = express();
 
@@ -22,11 +22,11 @@ app.use(express.json());
 // Статическая папка для доступа к видеофайлам и превьюшкам
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-app.use('/api/videos', videoRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/watched-videos', watchedVideoRoutes);
-app.use('/api/history', historyRoutes);
+app.use('/api/videos', videoRouter);
+app.use('/api/upload', uploadRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/watched-videos', watchedVideoRouter);
+app.use('/api/history', historyRouter);
 app.use('/api/tokens', tokensRouter);
 app.use('/api/auth', authRouter);
 
