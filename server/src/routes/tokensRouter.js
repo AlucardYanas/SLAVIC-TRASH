@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
+const cookiesConfig = require('../../config/cookiesConfig');
+const generateTokens = require('../utils/generateTokens');
 const express = require('express');
 const verifyRefreshToken = require('../middlewares/verifyRefreshToken');
-const generateTokens = require('../utils/generateTokens');
-const cookiesConfig = require('../../config/cookiesConfig');
 
 const tokensRouter = express.Router();
 

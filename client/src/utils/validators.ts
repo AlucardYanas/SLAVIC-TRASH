@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 
 export const VideoSchema = z.object({
-  name: z.string(),
+  title: z.string(),
   link: z.string(),
   length: z.number(),
   tags: z.array(z.string()),

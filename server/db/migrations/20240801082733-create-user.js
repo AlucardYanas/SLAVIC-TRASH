@@ -17,7 +17,7 @@ module.exports = {
       password: {
         type: Sequelize.TEXT,
       },
-      name: {
+      username: {
         type: Sequelize.STRING,
       },
       isAdmin: {

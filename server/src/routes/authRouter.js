@@ -1,21 +1,18 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 const { Router } = require('express');
 const bcrypt = require('bcrypt');
 const { User } = require('../../db/models');
 const generateTokens = require('../utils/generateTokens');
 const cookiesConfig = require('../../config/cookiesConfig');
-
 const router = Router();
 
 router.post('/signup', async (req, res) => {
-  const { name, email, password } = req.body;
+  const { username, email, password } = req.body;
 
-  if (name && email && password) {
+  if (username && email && password) {
     try {
       const [user, created] = await User.findOrCreate({
         where: { email },
-        defaults: { name, password: await bcrypt.hash(password, 10) },
+        defaults: { username, password: await bcrypt.hash(password, 10) },
       });
 
       if (!created) {

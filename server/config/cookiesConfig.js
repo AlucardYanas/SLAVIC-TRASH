@@ -1,4 +1,5 @@
-const jwtConfig = require('./jwtConfig');
+const jwtConfig = require("./jwtConfig");
+
 
 const cookiesConfig = {
   refresh: {

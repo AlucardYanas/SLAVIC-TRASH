@@ -1,26 +1,36 @@
-import useAuthStore from '../store/authStore';
-import type { UserStateType } from '../../types/types';
+import type React from 'react';
+import type { UserSignInType, UserSignUpType } from '../../types/types';
+import { useAppDispatch } from './reduxHooks';
+import { logoutThunk, signInThunk, signUpThunk } from '../../redux/auth/authActionThunk';
 
-type AuthHook = {
-  user: UserStateType | null;
-  isLoading: boolean;
-  error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-};
+export default function useAuth(): {
+  signInHandler: (e: React.FormEvent<HTMLFormElement>) => void;
+  signUpHandler: (e: React.FormEvent<HTMLFormElement>) => void;
+  logoutHandler: () => void;
+} {
+  const dispatch = useAppDispatch();
 
-const useAuth = (): AuthHook => {
-  const { user, isLoading, error, login, signup, logout } = useAuthStore((state) => ({
-    user: state.user,
-    isLoading: state.isLoading,
-    error: state.error,
-    login: state.login,
-    signup: state.signup,
-    logout: state.logout,
-  }));
+  const signInHandler = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget)) as UserSignInType;
+    if (!data.email || !data.password) return;
+    void dispatch(signInThunk(data));
+  };
 
-  return { user, isLoading, error, login, signup, logout };
-};
+  const signUpHandler = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget)) as UserSignUpType;
+    if (!data.email || !data.password || !data.username) return;
+    void dispatch(signUpThunk(data));
+  };
 
-export default useAuth;
+  const logoutHandler = (): void => {
+    void dispatch(logoutThunk());
+  };
+
+  return {
+    signInHandler,
+    signUpHandler,
+    logoutHandler,
+  };
+}

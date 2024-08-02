@@ -1,24 +1,14 @@
 import React from 'react';
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Input,
-  Text,
-  useColorModeValue,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, FormLabel, Input, Text, useColorModeValue, VStack } from '@chakra-ui/react';
 import useAuth from '../hooks/useAuth';
 
-export default function LoginPage(): JSX.Element {
-  const { signInHandler } = useAuth();
+export default function SignUpPage(): JSX.Element {
+  const { signUpHandler } = useAuth();
   return (
     <Flex justify="center">
       <Box
         as="form"
-        onSubmit={signInHandler}
+        onSubmit={signUpHandler}
         bg={useColorModeValue('', 'gray.900')}
         w="lg"
         p={8}
@@ -31,15 +21,26 @@ export default function LoginPage(): JSX.Element {
           mb={4}
           color={useColorModeValue('gray.900', 'gray.100')}
         >
-          Sign In
+          Sign Up
         </Text>
+
         <VStack spacing={4}>
+          <FormControl isRequired>
+            <FormLabel color={useColorModeValue('gray.900', 'gray.100')}>Name</FormLabel>
+            <Input
+              placeholder="Name"
+              name="username"
+              bg={useColorModeValue('gray.100', 'gray.900')}
+              color={useColorModeValue('current', 'white')}
+            />
+          </FormControl>
+
           <FormControl isRequired>
             <FormLabel color={useColorModeValue('gray.900', 'gray.100')}>Email</FormLabel>
             <Input
               type="email"
-              placeholder="Email"
               name="email"
+              placeholder="Email"
               bg={useColorModeValue('gray.100', 'gray.900')}
             />
           </FormControl>
@@ -52,10 +53,13 @@ export default function LoginPage(): JSX.Element {
               placeholder="Password"
               bg={useColorModeValue('gray.100', 'gray.900')}
             />
+            <Text mt={1} color={useColorModeValue('gray.900', 'gray.100')}>
+              At least 8 characters long
+            </Text>
           </FormControl>
 
           <Button type="submit" colorScheme="blue" w="full" mt={4}>
-            sign in
+            Create Account
           </Button>
         </VStack>
       </Box>
