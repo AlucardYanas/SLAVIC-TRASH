@@ -9,6 +9,7 @@ import { checkUserThunk } from './redux/auth/authActionThunk';
 import { useAppDispatch, useAppSelector } from './components/hooks/reduxHooks';
 import ProtectedRouter from './components/HOCs/ProtectedRouter';
 import AdminPage from './components/pages/AdminPage';
+import ErrorPage from './components/pages/ErrorPage';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -56,6 +57,10 @@ function App(): JSX.Element {
               <AdminPage />
             </ProtectedRouter>
           ),
+        },
+        {
+          path: '*',
+          element: <ErrorPage />,
         },
       ],
     },
