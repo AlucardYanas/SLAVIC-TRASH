@@ -4,10 +4,14 @@
 import { z } from 'zod';
 
 export const VideoSchema = z.object({
+  id: z.number(), // Убедитесь, что id присутствует здесь
   title: z.string(),
-  link: z.string(),
+  videoPath: z.string(),
+  link: z.string(), // Если `link` есть, но может быть пустым
   length: z.number(),
-  tags: z.array(z.string()),
+  tags: z.array(z.string()).optional(), // Массив тегов, который может быть пустым
+  approved: z.boolean(),
+  thumbnailPath: z.string().optional(), // Превью может отсутствовать
 });
 
 export const VideosSchema = z.array(VideoSchema);
