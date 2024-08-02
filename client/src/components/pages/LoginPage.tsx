@@ -1,5 +1,15 @@
 import React from 'react';
-import { Box, Button, Flex, FormControl, FormLabel, Input, Text, useColorModeValue, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Input,
+  Text,
+  useColorModeValue,
+  VStack,
+} from '@chakra-ui/react';
 import useAuth from '../hooks/useAuth';
 
 export default function LoginPage(): JSX.Element {
@@ -42,9 +52,6 @@ export default function LoginPage(): JSX.Element {
               placeholder="Password"
               bg={useColorModeValue('gray.100', 'gray.900')}
             />
-            <Text mt={1} color={useColorModeValue('gray.900', 'gray.100')}>
-              At least 8 characters long
-            </Text>
           </FormControl>
 
           <Button type="submit" colorScheme="blue" w="full" mt={4}>

@@ -1,7 +1,6 @@
 'use strict';
 
 const { Model } = require('sequelize');
-const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -9,23 +8,12 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.UserVideo, { foreignKey: 'userId' });
       User.hasMany(models.Like, { foreignKey: 'userId' });
     }
-
-    // Метод для проверки пароля
-    validPassword(password) {
-      return bcrypt.compareSync(password, this.password);
-    }
   }
 
   User.init(
     {
       email: DataTypes.STRING,
-      password: {
-        type: DataTypes.TEXT,
-        set(value) {
-          // Хэширование пароля перед сохранением
-          this.setDataValue('password', bcrypt.hashSync(value, 10));
-        },
-      },
+      password: DataTypes.TEXT,
       username: DataTypes.STRING,
       isAdmin: {
         type: DataTypes.BOOLEAN,
