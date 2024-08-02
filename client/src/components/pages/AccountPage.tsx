@@ -3,7 +3,6 @@ import { Checkbox, Container, Flex, VStack, Button, Input, Box } from '@chakra-u
 import VideoModal from '../ui/VideoModal';
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
 
-
 export default function AccountPage(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [videoTitle, setVideoTitle] = useState<string>('');
