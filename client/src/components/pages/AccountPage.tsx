@@ -48,13 +48,6 @@ export default function AccountPage(): JSX.Element {
         <Button colorScheme="teal" variant="solid" mr={4}>
           История просмотров
         </Button>
-        <Button
-          colorScheme="teal"
-          variant="solid"
-          onClick={() => document.getElementById('fileInput')?.click()}
-        >
-          Загрузить видео
-        </Button>
       </Box>
 
       {/* Скрытое поле для выбора файлов */}
@@ -77,9 +70,12 @@ export default function AccountPage(): JSX.Element {
         <Button
           colorScheme="teal"
           variant="solid"
-          onClick={handleSubmit}
-          isLoading={isLoading}
+          onClick={() => document.getElementById('fileInput')?.click()}
         >
+          Выбрать файл
+        </Button>
+        <br />
+        <Button colorScheme="teal" variant="solid" onClick={handleSubmit} isLoading={isLoading}>
           Отправить
         </Button>
       </Box>
