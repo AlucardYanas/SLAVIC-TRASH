@@ -5,6 +5,7 @@ import { Checkbox, Container, Flex, VStack, Box, Text } from '@chakra-ui/react';
 import VideoModal from '../ui/VideoModal'; // Убедитесь, что путь к компоненту правильный
 import { useGetVideosQuery } from '../../redux/apiSlice';
 import type { VideoType } from '../../types/types';
+import VideoPlayer from '../ui/VideoPlayer';
 
 export default function MainPage(): JSX.Element {
   const [filters, setFilters] = useState({
@@ -53,7 +54,7 @@ export default function MainPage(): JSX.Element {
         </VStack>
 
         {/* Центральная часть с видео */}
-        <Flex direction="column" align="center" justify="center" flex="1">
+        {/* <Flex direction="column" align="center" justify="center" flex="1">
           {isLoading ? (
             <Text>Загрузка...</Text>
           ) : error ? (
@@ -65,7 +66,10 @@ export default function MainPage(): JSX.Element {
               </Box>
             ))
           )}
-        </Flex>
+        </Flex> */}
+        <Box>
+          <VideoPlayer src="" />
+        </Box>
 
         {/* Правый блок с чекбоксами для тегов */}
         <VStack align="end" spacing={10}>
