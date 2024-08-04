@@ -1,3 +1,5 @@
+// models/Video.js
+
 'use strict';
 
 const { Model } = require('sequelize');
@@ -22,7 +24,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
-      thumbnailPath: DataTypes.STRING,  // Добавлено поле для хранения пути к превьюшке
+      thumbnailPath: DataTypes.STRING, // Добавлено поле для хранения пути к превьюшке
+      extractedTexts: DataTypes.ARRAY(DataTypes.STRING), // Поле для хранения извлеченных текстов
     },
     {
       sequelize,
