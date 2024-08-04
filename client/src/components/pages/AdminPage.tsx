@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Flex, VStack, Box, Text, Alert, AlertIcon } from '@chakra-ui/react';
-import AdminModal from '../ui/AdminModal';
+import VideoPlayer from '../ui/VideoPlayer';
 import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation } from '../../redux/upload/uploadSlice';
 import type { VideoType } from '../../types/types';
 
@@ -8,7 +8,7 @@ export default function AdminPage(): JSX.Element {
   const { data: pendingVideos = [], refetch, error } = useGetPendingVideosQuery();
   const [approveVideo] = useApproveVideoMutation();
   const [disapproveVideo] = useDisapproveVideoMutation();
-  const [selectedVideo, setSelectedVideo] = useState<VideoType | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -22,16 +22,18 @@ export default function AdminPage(): JSX.Element {
   }, [pendingVideos, error]);
 
   const handleApprove = async () => {
-    if (selectedVideo) {
-      await approveVideo({ id: selectedVideo.id, tags: selectedVideo.tags || [] });
+    if (pendingVideos[currentIndex]) {
+      await approveVideo({ id: pendingVideos[currentIndex].id, tags: pendingVideos[currentIndex].tags || [] });
       refetch();
+      setCurrentIndex((prevIndex) => (prevIndex + 1 < pendingVideos.length ? prevIndex + 1 : 0));
     }
   };
 
   const handleDisapprove = async () => {
-    if (selectedVideo) {
-      await disapproveVideo(selectedVideo.id);
+    if (pendingVideos[currentIndex]) {
+      await disapproveVideo(pendingVideos[currentIndex].id);
       refetch();
+      setCurrentIndex((prevIndex) => (prevIndex + 1 < pendingVideos.length ? prevIndex + 1 : 0));
     }
   };
 
@@ -44,16 +46,9 @@ export default function AdminPage(): JSX.Element {
             {alertMessage}
           </Alert>
         )}
-        <VStack spacing={4} width="100%">
-          {pendingVideos.map((video: VideoType) => (
-            <Box key={video.id} p={4} borderWidth="1px" borderRadius="lg" width="100%" onClick={() => setSelectedVideo(video)}>
-              <Text>{video.title}</Text>
-            </Box>
-          ))}
-        </VStack>
-        {selectedVideo && (
+        {pendingVideos.length > 0 && (
           <>
-            <AdminModal videoSrc={selectedVideo.videoPath} />
+            <VideoPlayer src={pendingVideos[currentIndex].videoPath} />
             <Flex mt={4}>
               <Button mr={2} colorScheme="green" onClick={handleApprove}>Approve</Button>
               <Button colorScheme="red" onClick={handleDisapprove}>Disapprove</Button>

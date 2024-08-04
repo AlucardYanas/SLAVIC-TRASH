@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { VideoType } from '../types/types';
+import type { VideoType } from '../../types/types';
 
 export const videosApi = createApi({
-  reducerPath: 'api',
+  reducerPath: 'videosApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
   tagTypes: ['Video'],
   endpoints: (builder) => ({
@@ -10,50 +10,23 @@ export const videosApi = createApi({
       query: () => '/videos',
       providesTags: ['Video'],
     }),
+    getLikedVideos: builder.query<VideoType[], { userId: number }>({
+      query: ({ userId }) => `/videos/liked/${userId}`,
+      providesTags: ['Video'],
+    }),
+    likeVideo: builder.mutation<void, { userId: number; videoId: number }>({
+      query: ({ userId, videoId }) => ({
+        url: `/videos/like`,
+        method: 'POST',
+        body: { userId, videoId },
+      }),
+      invalidatesTags: ['Video'],
+    }),
   }),
 });
 
-//   getTrackById: builder.query<TrackType, number>({
-//     query: (id) => `/tracks/${id}`,
-//     providesTags: ['Track'],
-//   }),
-//   getTracksByGenre: builder.query<TrackType[], number>({
-//     query: (genreId) => `/tracks/genre/${genreId}`,
-//     providesTags: ['Track'],
-//   }),
-//   addTrack: builder.mutation<TrackType, TrackCrateType >({
-//     query: (track) => ({
-//       url: `/tracks/genre/${track.genre_id}`,
-//       method: 'POST',
-//       body: track,
-//     }),
-//     invalidatesTags: ['Track'],
-//   }),
-//   updateTrack: builder.mutation<TrackType, Partial<TrackType>>({
-//     query: (track) => ({
-//       url: `/tracks/${track.id}`,
-//       method: 'PATCH',
-//       body: {
-//         title: track.title,
-//         group: track.group,
-//         img: track.img,
-//         genre_id: track.genre_id,
-//       },
-//     }),
-//     invalidatesTags: ['Track'],
-//   }),
-//   deleteTrack: builder.mutation<{ success: boolean }, number>({
-//     query: (id) => ({
-//       url: `/tracks/${id}`,
-//       method: 'DELETE',
-//     }),
-//     invalidatesTags: ['Track'],
-//   }),
 export const {
   useGetVideosQuery,
-  // useGetTrackByIdQuery,
-  // useGetTracksByGenreQuery,
-  // useAddTrackMutation,
-  // useUpdateTrackMutation,
-  // useDeleteTrackMutation,
+  useGetLikedVideosQuery,
+  useLikeVideoMutation,
 } = videosApi;

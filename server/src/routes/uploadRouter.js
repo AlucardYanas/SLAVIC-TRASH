@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
-const { UploadVideo } = require('../../db/models/');
+const { UploadVideo } = require('../../db/models');
 
 const router = express.Router();
 
@@ -26,7 +26,6 @@ router.post('/', upload.single('video'), async (req, res) => {
     const videoPath = req.file.path;
 
     // Получение длины видео с помощью ffmpeg
-    // eslint-disable-next-line consistent-return
     ffmpeg.ffprobe(videoPath, async (err, metadata) => {
       if (err) {
         console.error('Ошибка при получении метаданных видео:', err);
@@ -40,7 +39,6 @@ router.post('/', upload.single('video'), async (req, res) => {
         title,
         videoPath,
         length,
-        approved: false,
       });
 
       res.status(201).json({ message: 'Video uploaded successfully', uploadVideo });

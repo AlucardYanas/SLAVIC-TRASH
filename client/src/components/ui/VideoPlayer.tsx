@@ -5,9 +5,10 @@ import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 type VideoPlayerProps = {
   src: string;
   poster?: string;
+  onEnd?: () => void;
 };
 
-export default function VideoPlayer({ src, poster }: VideoPlayerProps): JSX.Element {
+export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): JSX.Element {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
@@ -48,7 +49,7 @@ export default function VideoPlayer({ src, poster }: VideoPlayerProps): JSX.Elem
 
   return (
     <Box position="relative" w="400px" h="400px" mx="auto" bg="black">
-      <Box as="video" ref={videoRef} src={src} poster={poster} width="100%" height="100%" onTimeUpdate={updateProgress} />
+      <Box as="video" ref={videoRef} src={src} poster={poster} width="100%" height="100%" onTimeUpdate={updateProgress} onEnded={onEnd} />
       {!isPlaying && (
         <IconButton
           aria-label="Play"

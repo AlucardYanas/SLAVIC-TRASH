@@ -18,10 +18,6 @@ module.exports = (sequelize, DataTypes) => {
       link: DataTypes.STRING,
       length: DataTypes.INTEGER,
       tags: DataTypes.ARRAY(DataTypes.STRING),
-      approved: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-      },
       thumbnailPath: DataTypes.STRING,  // Добавлено поле для хранения пути к превьюшке
     },
     {

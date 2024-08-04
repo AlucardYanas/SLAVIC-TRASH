@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Checkbox, Container, Flex, VStack, Button, Input, Box } from '@chakra-ui/react';
-import VideoModal from '../ui/VideoModal';
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
 
 export default function AccountPage(): JSX.Element {
@@ -29,15 +28,15 @@ export default function AccountPage(): JSX.Element {
 
       try {
         await uploadVideo(formData).unwrap();
-        alert('Video uploaded successfully');
+        alert('Видео успешно загружено');
         setSelectedFile(null);
         setVideoTitle('');
       } catch (error) {
-        console.error('Upload failed:', error);
-        alert('Failed to upload video');
+        console.error('Ошибка загрузки:', error);
+        alert('Не удалось загрузить видео');
       }
     } else {
-      alert('Please select a video file and enter a title');
+      alert('Пожалуйста, выберите видеофайл и введите название');
     }
   };
 
@@ -84,24 +83,21 @@ export default function AccountPage(): JSX.Element {
       <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
         {/* Левый блок с чекбоксами для фильтрации */}
         <VStack align="start" spacing={10}>
-          <Checkbox>Filter Option 1</Checkbox>
-          <Checkbox>Filter Option 2</Checkbox>
-          <Checkbox>Filter Option 3</Checkbox>
+          <Checkbox>Опция фильтрации 1</Checkbox>
+          <Checkbox>Опция фильтрации 2</Checkbox>
+          <Checkbox>Опция фильтрации 3</Checkbox>
         </VStack>
 
-        {/* Центральная часть с модальным окном */}
+        {/* Центральная часть */}
         <Flex direction="column" align="center" justify="center" flex="1">
-          <VideoModal
-            videoTitle="Sample Video"
-            videoSrc="https://videos.pexels.com/video-files/9001899/9001899-hd_1920_1080_25fps.mp4"
-          />
+          <Box>Центральная часть с основным содержимым</Box>
         </Flex>
 
         {/* Правый блок с чекбоксами для тегов */}
         <VStack align="end" spacing={10}>
-          <Checkbox>Tag Option 1</Checkbox>
-          <Checkbox>Tag Option 2</Checkbox>
-          <Checkbox>Tag Option 3</Checkbox>
+          <Checkbox>Тег 1</Checkbox>
+          <Checkbox>Тег 2</Checkbox>
+          <Checkbox>Тег 3</Checkbox>
         </VStack>
       </Flex>
     </Container>

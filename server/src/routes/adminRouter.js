@@ -2,14 +2,14 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
-const { Video } = require('../../db/models');
+const { UploadVideo, Video } = require('../../db/models');
 
 const router = express.Router();
 
 // Получение всех видео, ожидающих одобрения
 router.get('/pending', async (req, res) => {
   try {
-    const pendingVideos = await Video.findAll({ where: { approved: false } });
+    const pendingVideos = await UploadVideo.findAll();
     if (pendingVideos.length === 0) {
       return res.status(200).json({ message: 'No new videos for approval' });
     }
@@ -25,13 +25,13 @@ router.post('/approve/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { tags } = req.body;
-    const video = await Video.findByPk(id);
+    const uploadVideo = await UploadVideo.findByPk(id);
 
-    if (!video) {
+    if (!uploadVideo) {
       return res.status(404).json({ error: 'Видео не найдено' });
     }
 
-    const oldPath = video.videoPath;
+    const oldPath = uploadVideo.videoPath;
     const newPath = path.join('public/videos', path.basename(oldPath));
     fs.renameSync(oldPath, newPath);
 
@@ -44,12 +44,16 @@ router.post('/approve/:id', async (req, res) => {
         size: '320x240'
       })
       .on('end', async () => {
-        video.videoPath = newPath;
-        video.link = `/public/videos/${path.basename(newPath)}`;
-        video.approved = true;
-        video.tags = tags;
-        video.thumbnailPath = `/public/thumbnails/${path.basename(thumbnailPath)}`;
-        await video.save();
+        const video = await Video.create({
+          title: uploadVideo.title,
+          videoPath: newPath,
+          link: `/public/videos/${path.basename(newPath)}`,
+          length: uploadVideo.length,
+          tags,
+          thumbnailPath: `/public/thumbnails/${path.basename(thumbnailPath)}`,
+        });
+
+        await uploadVideo.destroy();
 
         res.status(200).json(video);
       })
@@ -68,14 +72,14 @@ router.post('/approve/:id', async (req, res) => {
 router.delete('/disapprove/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const video = await Video.findByPk(id);
+    const uploadVideo = await UploadVideo.findByPk(id);
 
-    if (!video) {
+    if (!uploadVideo) {
       return res.status(404).json({ error: 'Видео не найдено' });
     }
 
-    fs.unlinkSync(video.videoPath);
-    await video.destroy();
+    fs.unlinkSync(uploadVideo.videoPath);
+    await uploadVideo.destroy();
 
     res.status(200).json({ message: 'Видео отклонено и удалено' });
   } catch (error) {

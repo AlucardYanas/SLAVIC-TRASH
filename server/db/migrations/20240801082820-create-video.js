@@ -24,10 +24,7 @@ module.exports = {
       },
       tags: {
         type: Sequelize.ARRAY(Sequelize.STRING),
-      },
-      approved: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
+        allowNull: true,
       },
       thumbnailPath: {
         type: Sequelize.STRING,

@@ -13,7 +13,7 @@ export const uploadVideoApi = createApi({
         method: 'POST',
         body: formData,
       }),
-      invalidatesTags: [{ type: 'Video', id: 'LIST' }], // Инвалидируем кеш списка видео
+      invalidatesTags: [{ type: 'PendingVideo', id: 'LIST' }], // Инвалидируем кеш списка ожидающих видео
     }),
     getPendingVideos: builder.query<VideoType[], void>({
       query: () => '/admin/pending',
