@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Container, Flex, VStack, Box, Text, Button } from '@chakra-ui/react';
+// src/components/pages/MainPage.tsx
+
+import React, { useState, useEffect } from 'react';
+import { Container, Flex, Text, Button } from '@chakra-ui/react';
 import { useGetVideosQuery } from '../../redux/apiSlice';
 import VideoPlayer from '../ui/VideoPlayer';
 import type { VideoType } from '../../types/types';
@@ -7,16 +9,19 @@ import type { VideoType } from '../../types/types';
 export default function MainPage(): JSX.Element {
   const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
   const { data, error, isLoading } = useGetVideosQuery();
-  console.log(data);
 
   // Безопасная обработка данных видео
-  const videos: VideoType[] = Array.isArray(data) ? data : []; // Проверяем, является ли data массивом
+  const videos: VideoType[] = Array.isArray(data?.data) ? data.data : []; // Проверяем, является ли data массивом
+
+  useEffect(() => {
+    console.log(data); // Логируем данные для отладки
+  }, [data]);
 
   // Обработчик завершения видео
   const handleVideoEnd = () => {
     if (currentVideoIndex < videos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
-    } 
+    }
   };
 
   // Обработчик переключения на следующее видео
@@ -25,13 +30,17 @@ export default function MainPage(): JSX.Element {
       setCurrentVideoIndex(currentVideoIndex + 1);
     }
   };
+  const handlePrevVideo = () => {
+    if (currentVideoIndex < videos.length +1 ) {
+      setCurrentVideoIndex(currentVideoIndex - 1);
+    }
+  };
 
   return (
     <Container maxW="container.xl" p={4}>
       <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
         {/* Левый блок с чекбоксами для тегов */}
         
-
         {/* Центральная часть с видео */}
         <Flex direction="column" align="center" justify="center" flex="1">
           {isLoading ? (
@@ -48,6 +57,9 @@ export default function MainPage(): JSX.Element {
               />
               <Button onClick={handleNextVideo} mt={4}>
                 Следующее видео
+              </Button>
+              <Button onClick={handlePrevVideo} mt={4}>
+                Предыдущее видео
               </Button>
             </>
           )}

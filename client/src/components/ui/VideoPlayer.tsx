@@ -14,6 +14,7 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
 
+  // Используем useEffect для обновления состояния при изменении источника видео
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.src = src;
@@ -60,10 +61,12 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
     if (onEnd) {
       onEnd();
     }
+    setIsPlaying(false); // Остановить воспроизведение в конце видео
+    setProgress(0); // Сбросить прогресс после окончания
   };
 
   return (
-    <Box position="relative" w="400px" h="400px" mx="auto" bg="black">
+    <Box position="relative" w="600px" h="400px" mx="auto" bg="black">
       <Box
         as="video"
         ref={videoRef}
@@ -79,7 +82,7 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
           aria-label="Play"
           icon={<FaPlay />}
           onClick={togglePlayPause}
-          colorScheme="teal"
+          colorScheme="green"
           size="lg"
           position="absolute"
           top="50%"
@@ -102,7 +105,7 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
           aria-label={isPlaying ? 'Pause' : 'Play'}
           icon={isPlaying ? <FaPause /> : <FaPlay />}
           onClick={togglePlayPause}
-          colorScheme="teal"
+          colorScheme="green"
           size="sm"
         />
         <Slider
@@ -111,7 +114,7 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
           onChange={handleProgressChange}
           flex="1"
           mx="4"
-          colorScheme="teal"
+          colorScheme="green"
         >
           <SliderTrack>
             <SliderFilledTrack />
@@ -122,7 +125,7 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
           aria-label="Volume"
           icon={volume > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
           onClick={() => handleVolumeChange(volume > 0 ? 0 : 100)}
-          colorScheme="teal"
+          colorScheme="green"
           size="sm"
         />
         <Slider
@@ -131,7 +134,7 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
           onChange={handleVolumeChange}
           maxW="100px"
           ml="4"
-          colorScheme="teal"
+          colorScheme="green"
           size="sm"
         >
           <SliderTrack>
