@@ -1,20 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb, IconButton } from '@chakra-ui/react';
-import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaThumbsUp, FaExpand } from 'react-icons/fa';
 
 interface VideoPlayerProps {
   src: string;
   poster?: string;
   onEnd?: () => void;
+  onLike?: () => void;
 }
 
-export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): JSX.Element {
+export default function VideoPlayer({ src, poster, onEnd, onLike }: VideoPlayerProps): JSX.Element {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
 
-  // Используем useEffect для обновления состояния при изменении источника видео
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.src = src;
@@ -53,7 +53,7 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
   const updateProgress = () => {
     if (videoRef.current) {
       const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
-      setProgress(progress);
+      setProgress(isNaN(progress) ? 0 : progress); // Добавляем проверку на NaN
     }
   };
 
@@ -61,8 +61,22 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
     if (onEnd) {
       onEnd();
     }
-    setIsPlaying(false); // Остановить воспроизведение в конце видео
-    setProgress(0); // Сбросить прогресс после окончания
+    setIsPlaying(false);
+    setProgress(0);
+  };
+
+  const toggleFullScreen = () => {
+    if (videoRef.current) {
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen();
+      } else if (videoRef.current.mozRequestFullScreen) { /* Firefox */
+        videoRef.current.mozRequestFullScreen();
+      } else if (videoRef.current.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        videoRef.current.webkitRequestFullscreen();
+      } else if (videoRef.current.msRequestFullscreen) { /* IE/Edge */
+        videoRef.current.msRequestFullscreen();
+      }
+    }
   };
 
   return (
@@ -142,6 +156,20 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
           </SliderTrack>
           <SliderThumb />
         </Slider>
+        <IconButton
+          aria-label="Like"
+          icon={<FaThumbsUp />}
+          onClick={onLike}
+          colorScheme="green"
+          size="sm"
+        />
+        <IconButton
+          aria-label="Fullscreen"
+          icon={<FaExpand />}
+          onClick={toggleFullScreen}
+          colorScheme="green"
+          size="sm"
+        />
       </Flex>
     </Box>
   );

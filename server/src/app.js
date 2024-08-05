@@ -10,6 +10,7 @@ const uploadRouter = require('./routes/uploadRouter');
 const adminRouter = require('./routes/adminRouter');
 const watchedVideoRouter = require('./routes/watchedVideoRouter');
 const historyRouter = require('./routes/historyRouter');
+const likeRoutes = require('./routes/likeRouter');
 
 const app = express();
 
@@ -29,5 +30,5 @@ app.use('/api/watched-videos', watchedVideoRouter);
 app.use('/api/history', historyRouter);
 app.use('/api/tokens', tokensRouter);
 app.use('/api/auth', authRouter);
-
+app.use('/api/likedVideos', likeRoutes); // Регистрируем маршрут для лайков
 module.exports = app;
