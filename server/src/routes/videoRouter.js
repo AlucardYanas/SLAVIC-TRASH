@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const { Video } = require('../../db/models');
 const router = express.Router();
 
@@ -8,16 +9,18 @@ router.get('/', async (req, res) => {
     // Извлечение параметров запроса для фильтрации, сортировки и пагинации
     const { page = 1, limit = 10, sort = 'createdAt', order = 'DESC', tag, search } = req.query;
 
+    console.log('Получен запрос на получение видео:', req.query); // Логируем параметры запроса
+
     const whereClause = {};
 
     // Фильтрация по тегу
     if (tag) {
-      whereClause.tags = { [Op.contains]: [tag] };
+      whereClause.tags = { [Op.contains]: [tag] }; // Убедитесь, что поле `tags` - массив
     }
 
     // Фильтрация по поисковому запросу (например, по названию)
     if (search) {
-      whereClause.title = { [Op.iLike]: `%${search}%` };
+      whereClause.title = { [Op.iLike]: `%${search}%` }; // Использование iLike для нечувствительного поиска
     }
 
     // Получение видео с учетом параметров фильтрации и сортировки
@@ -28,6 +31,8 @@ router.get('/', async (req, res) => {
       order: [[sort, order.toUpperCase()]],
       attributes: ['id', 'title', 'videoPath', 'length', 'thumbnailPath'], // Выборочные поля
     });
+
+    console.log('Получены видео:', videos); // Логируем извлеченные видео
 
     // Подсчет общего количества видео для пагинации
     const totalVideos = await Video.count({ where: whereClause });

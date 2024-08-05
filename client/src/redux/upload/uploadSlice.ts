@@ -49,6 +49,10 @@ export const uploadVideoApi = createApi({
       query: (videoId) => `/videos/${videoId}/texts`,
       providesTags: (result, error, videoId) => [{ type: 'Video', id: videoId }],
     }),
+    getAllVideos: builder.query<VideoType[], void>({
+      query: () => '/videos',
+      providesTags: [{ type: 'Video', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -58,4 +62,5 @@ export const {
   useApproveVideoMutation,
   useDisapproveVideoMutation,
   useGetExtractedTextsQuery,
+  useGetAllVideosQuery,
 } = uploadVideoApi;

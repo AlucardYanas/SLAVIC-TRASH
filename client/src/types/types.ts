@@ -1,7 +1,5 @@
-// src/types/VideoTypes.ts
-
 import type { z } from 'zod';
-import type { VideoSchema } from '../utils/validators';
+import type { VideoSchema } from '../utils/validators'; // Импортируем схему
 
 // Тип видео, основанный на схеме
 export type VideoType = z.infer<typeof VideoSchema> & {
@@ -12,6 +10,8 @@ export type VideoType = z.infer<typeof VideoSchema> & {
   tags: string[];
   approved: boolean;
   thumbnailPath?: string;
+  extractedTexts?: string[]; // Добавим, если используется в вашем проекте
+  transcribedText?: string;  // Добавляем новое свойство транскрибированного текста
 };
 
 // Интерфейс ответа сервера при загрузке видео

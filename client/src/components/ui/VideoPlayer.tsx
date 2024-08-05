@@ -1,16 +1,15 @@
 // src/components/ui/VideoPlayer.tsx
 
 import React, { useRef, useState } from 'react';
-import { Box, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb, IconButton, Text } from '@chakra-ui/react';
+import { Box, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb, IconButton } from '@chakra-ui/react';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
-type VideoPlayerProps = {
+interface VideoPlayerProps {
   src: string;
   poster?: string;
-  analysisResults?: string[];
-};
+}
 
-export default function VideoPlayer({ src, poster, analysisResults }: VideoPlayerProps): JSX.Element {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, poster }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
@@ -108,14 +107,8 @@ export default function VideoPlayer({ src, poster, analysisResults }: VideoPlaye
           <SliderThumb />
         </Slider>
       </Flex>
-      {analysisResults && (
-        <Box mt={2} bg="gray.800" p={2} borderRadius="md">
-          <Text color="white">Analysis Results:</Text>
-          {analysisResults.map((result, index) => (
-            <Text key={index} color="white">{result}</Text>
-          ))}
-        </Box>
-      )}
     </Box>
   );
-}
+};
+
+export default VideoPlayer;

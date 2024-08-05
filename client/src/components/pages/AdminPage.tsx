@@ -1,11 +1,8 @@
-// src/components/pages/AdminPage.tsx
-
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Flex, VStack, Box, Text, Alert, AlertIcon } from '@chakra-ui/react';
 import AdminModal from '../ui/AdminModal';
-import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation } from '../../redux/upload/uploadSlice';
+import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation, useGetExtractedTextsQuery } from '../../redux/upload/uploadSlice';
 import type { VideoType } from '../../types/types';
-import { useGetExtractedTextsQuery } from '../../redux/upload/uploadSlice';
 
 export default function AdminPage(): JSX.Element {
   const { data: pendingVideos = [], refetch, error } = useGetPendingVideosQuery();
@@ -63,14 +60,18 @@ export default function AdminPage(): JSX.Element {
           <>
             <AdminModal videoTitle={selectedVideo.title} videoSrc={selectedVideo.videoPath} />
             <Flex mt={4}>
-              <Button mr={2} colorScheme="green" onClick={handleApprove}>Approve</Button>
-              <Button colorScheme="red" onClick={handleDisapprove}>Disapprove</Button>
+              <Button mr={2} colorScheme="green" onClick={handleApprove}>Одобрить</Button>
+              <Button colorScheme="red" onClick={handleDisapprove}>Отклонить</Button>
             </Flex>
             <Box mt={4}>
-              <Text fontWeight="bold">Extracted Texts:</Text>
+              <Text fontWeight="bold">Извлеченные тексты:</Text>
               {extractedTexts?.texts.map((text, index) => (
                 <Text key={index}>{text}</Text>
               ))}
+            </Box>
+            <Box mt={4}>
+              <Text fontWeight="bold">Транскрибированный текст:</Text>
+              <Text>{selectedVideo.transcribedText}</Text>
             </Box>
           </>
         )}
