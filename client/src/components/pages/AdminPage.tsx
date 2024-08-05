@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Flex, VStack, Box, Text, Alert, AlertIcon } from '@chakra-ui/react';
-import AdminModal from '../ui/AdminModal';
-import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation, useGetExtractedTextsQuery } from '../../redux/upload/uploadSlice';
+import AdminVideoPlayer from '../ui/AdminVideoPlayer';
+import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation } from '../../redux/upload/uploadSlice';
 import type { VideoType } from '../../types/types';
 
 export default function AdminPage(): JSX.Element {
   const { data: pendingVideos = [], refetch, error } = useGetPendingVideosQuery();
   const [approveVideo] = useApproveVideoMutation();
   const [disapproveVideo] = useDisapproveVideoMutation();
-  const [selectedVideo, setSelectedVideo] = useState<VideoType | null>(null);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-
-  // Fetching extracted texts
-  const { data: extractedTexts } = useGetExtractedTextsQuery(selectedVideo?.id || 0, {
-    skip: !selectedVideo,
-  });
+  console.log(approveVideo)
 
   useEffect(() => {
     if (error) {
@@ -27,18 +23,28 @@ export default function AdminPage(): JSX.Element {
   }, [pendingVideos, error]);
 
   const handleApprove = async () => {
+    const selectedVideo = pendingVideos[currentVideoIndex];
     if (selectedVideo) {
-      await approveVideo({ id: selectedVideo.id, tags: selectedVideo.tags || [] });
+      await approveVideo({ id: selectedVideo.id });
       refetch();
+      handleNextVideo();
     }
   };
 
   const handleDisapprove = async () => {
+    const selectedVideo = pendingVideos[currentVideoIndex];
     if (selectedVideo) {
       await disapproveVideo(selectedVideo.id);
       refetch();
+      handleNextVideo();
     }
   };
+
+  const handleNextVideo = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % pendingVideos.length);
+  };
+
+  const currentVideo = pendingVideos[currentVideoIndex];
 
   return (
     <Container maxW="container.xl" p={4}>
@@ -49,31 +55,20 @@ export default function AdminPage(): JSX.Element {
             {alertMessage}
           </Alert>
         )}
-        <VStack spacing={4} width="100%">
-          {pendingVideos.map((video: VideoType) => (
-            <Box key={video.id} p={4} borderWidth="1px" borderRadius="lg" width="100%" onClick={() => setSelectedVideo(video)}>
-              <Text>{video.title}</Text>
-            </Box>
-          ))}
-        </VStack>
-        {selectedVideo && (
+        {currentVideo ? (
           <>
-            <AdminModal videoTitle={selectedVideo.title} videoSrc={selectedVideo.videoPath} />
+            <AdminVideoPlayer src={currentVideo.videoPath} />
             <Flex mt={4}>
-              <Button mr={2} colorScheme="green" onClick={handleApprove}>Одобрить</Button>
-              <Button colorScheme="red" onClick={handleDisapprove}>Отклонить</Button>
+              <Button mr={2} colorScheme="green" onClick={handleApprove}>
+                Одобрить
+              </Button>
+              <Button colorScheme="red" onClick={handleDisapprove}>
+                Отклонить
+              </Button>
             </Flex>
-            <Box mt={4}>
-              <Text fontWeight="bold">Извлеченные тексты:</Text>
-              {extractedTexts?.texts.map((text, index) => (
-                <Text key={index}>{text}</Text>
-              ))}
-            </Box>
-            <Box mt={4}>
-              <Text fontWeight="bold">Транскрибированный текст:</Text>
-              <Text>{selectedVideo.transcribedText}</Text>
-            </Box>
           </>
+        ) : (
+          <Text>Нет новых видео для одобрения</Text>
         )}
       </Flex>
     </Container>

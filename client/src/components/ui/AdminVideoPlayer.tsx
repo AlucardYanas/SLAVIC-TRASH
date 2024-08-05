@@ -1,27 +1,17 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb, IconButton } from '@chakra-ui/react';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
-interface VideoPlayerProps {
+interface AdminVideoPlayerProps {
   src: string;
-  poster?: string;
-  onEnd?: () => void;
+  onEnd: () => void;
 }
 
-export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): JSX.Element {
+export default function AdminVideoPlayer({ src, onEnd }: AdminVideoPlayerProps): JSX.Element {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.src = src;
-      videoRef.current.load();
-      setIsPlaying(false);
-      setProgress(0);
-    }
-  }, [src]);
 
   const togglePlayPause = () => {
     if (videoRef.current) {
@@ -56,23 +46,17 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
     }
   };
 
-  const handleEnded = () => {
-    if (onEnd) {
-      onEnd();
-    }
-  };
-
   return (
-    <Box position="relative" w="400px" h="400px" mx="auto" bg="black">
+    <Box position="relative" w="600px" h="400px" mx="auto" bg="black">
       <Box
         as="video"
         ref={videoRef}
         src={src}
-        poster={poster}
         width="100%"
         height="100%"
         onTimeUpdate={updateProgress}
-        onEnded={handleEnded}
+        onEnded={onEnd}
+        controls={false}
       />
       {!isPlaying && (
         <IconButton

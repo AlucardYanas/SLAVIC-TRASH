@@ -1,5 +1,3 @@
-// redux/upload/uploadSlice.ts
-
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { UploadVideoResponse, VideoType } from '../../types/types';
 
@@ -30,7 +28,7 @@ export const uploadVideoApi = createApi({
       },
       providesTags: [{ type: 'PendingVideo', id: 'LIST' }],
     }),
-    approveVideo: builder.mutation<VideoType, { id: number; tags: string[] }>({
+    approveVideo: builder.mutation<VideoType, { id: number; tags?: string[] }>({
       query: ({ id, tags }) => ({
         url: `/admin/approve/${id}`,
         method: 'POST',
@@ -45,10 +43,6 @@ export const uploadVideoApi = createApi({
       }),
       invalidatesTags: [{ type: 'PendingVideo', id: 'LIST' }],
     }),
-    getExtractedTexts: builder.query<{ texts: string[] }, number>({
-      query: (videoId) => `/videos/${videoId}/texts`,
-      providesTags: (result, error, videoId) => [{ type: 'Video', id: videoId }],
-    }),
     getAllVideos: builder.query<VideoType[], void>({
       query: () => '/videos',
       providesTags: [{ type: 'Video', id: 'LIST' }],
@@ -61,6 +55,5 @@ export const {
   useGetPendingVideosQuery,
   useApproveVideoMutation,
   useDisapproveVideoMutation,
-  useGetExtractedTextsQuery,
   useGetAllVideosQuery,
 } = uploadVideoApi;

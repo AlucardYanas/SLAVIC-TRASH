@@ -1,59 +1,36 @@
-// src/components/pages/MainPage.tsx
-
 import React, { useState } from 'react';
-import { Checkbox, Container, Flex, VStack, Box, Text } from '@chakra-ui/react';
-import VideoModal from '../ui/VideoModal';
+import { Container, Flex, VStack, Box, Text, Button } from '@chakra-ui/react';
 import { useGetVideosQuery } from '../../redux/apiSlice';
+import VideoPlayer from '../ui/VideoPlayer';
 import type { VideoType } from '../../types/types';
 
 export default function MainPage(): JSX.Element {
-  const [filters, setFilters] = useState({
-    lessThan10: false,
-    lessThan20: false,
-    lessThan30: false,
-  });
-
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
   const { data, error, isLoading } = useGetVideosQuery();
+  console.log(data);
 
   // Безопасная обработка данных видео
   const videos: VideoType[] = Array.isArray(data) ? data : []; // Проверяем, является ли data массивом
 
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: checked,
-    }));
+  // Обработчик завершения видео
+  const handleVideoEnd = () => {
+    if (currentVideoIndex < videos.length - 1) {
+      setCurrentVideoIndex(currentVideoIndex + 1);
+    }
   };
 
-  const filteredVideos = videos.filter((video) => {
-    if (filters.lessThan10 && video.length <= 10) {
-      return true;
+  // Обработчик переключения на следующее видео
+  const handleNextVideo = () => {
+    if (currentVideoIndex < videos.length - 1) {
+      setCurrentVideoIndex(currentVideoIndex + 1);
     }
-    if (filters.lessThan20 && video.length <= 20) {
-      return true;
-    }
-    if (filters.lessThan30 && video.length <= 30) {
-      return true;
-    }
-    return false;
-  });
+  };
 
   return (
     <Container maxW="container.xl" p={4}>
       <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
-        {/* Левый блок с чекбоксами для фильтрации */}
-        <VStack align="start" spacing={10}>
-          <Checkbox name="lessThan10" onChange={handleFilterChange} isChecked={filters.lessThan10}>
-            Видео не более 10 секунд
-          </Checkbox>
-          <Checkbox name="lessThan20" onChange={handleFilterChange} isChecked={filters.lessThan20}>
-            Видео не более 20 секунд
-          </Checkbox>
-          <Checkbox name="lessThan30" onChange={handleFilterChange} isChecked={filters.lessThan30}>
-            Видео не более 30 секунд
-          </Checkbox>
-        </VStack>
+        {/* Левый блок с чекбоксами для тегов */}
+        
 
         {/* Центральная часть с видео */}
         <Flex direction="column" align="center" justify="center" flex="1">
@@ -61,23 +38,23 @@ export default function MainPage(): JSX.Element {
             <Text>Загрузка...</Text>
           ) : error ? (
             <Text>Ошибка загрузки видео.</Text>
-          ) : filteredVideos.length === 0 ? (
+          ) : videos.length === 0 ? (
             <Text>Нет доступных видео.</Text>
           ) : (
-            filteredVideos.map((video: VideoType) => (
-              <Box key={video.id} mb={4}>
-                <VideoModal videoTitle={video.title} videoSrc={video.link} />
-              </Box>
-            ))
+            <>
+              <VideoPlayer
+                src={videos[currentVideoIndex].videoPath}
+                onEnd={handleVideoEnd}
+              />
+              <Button onClick={handleNextVideo} mt={4}>
+                Следующее видео
+              </Button>
+            </>
           )}
         </Flex>
 
         {/* Правый блок с чекбоксами для тегов */}
-        <VStack align="end" spacing={10}>
-          <Checkbox>Tag Option 1</Checkbox>
-          <Checkbox>Tag Option 2</Checkbox>
-          <Checkbox>Tag Option 3</Checkbox>
-        </VStack>
+      
       </Flex>
     </Container>
   );

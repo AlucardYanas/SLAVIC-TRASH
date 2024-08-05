@@ -7,16 +7,11 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     // Извлечение параметров запроса для фильтрации, сортировки и пагинации
-    const { page = 1, limit = 10, sort = 'createdAt', order = 'DESC', tag, search } = req.query;
+    const { page = 1, limit = 10, sort = 'createdAt', order = 'DESC', search } = req.query;
 
     console.log('Получен запрос на получение видео:', req.query); // Логируем параметры запроса
 
-    const whereClause = {};
-
-    // Фильтрация по тегу
-    if (tag) {
-      whereClause.tags = { [Op.contains]: [tag] }; // Убедитесь, что поле `tags` - массив
-    }
+    const whereClause = { approved: true }; // Условие для получения только одобренных видео
 
     // Фильтрация по поисковому запросу (например, по названию)
     if (search) {

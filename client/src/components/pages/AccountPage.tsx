@@ -1,22 +1,11 @@
 import React, { useState } from 'react';
-import { Checkbox, Container, Flex, VStack, Button, Input, Box, Text } from '@chakra-ui/react';
-import VideoModal from '../ui/VideoModal';
+import { Checkbox, Container, Flex, VStack, Button, Input, Box } from '@chakra-ui/react';
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
-import { useGetVideosQuery } from '../../redux/apiSlice';
-import type { VideoType } from '../../types/types';
 
 export default function AccountPage(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [videoTitle, setVideoTitle] = useState<string>('');
   const [uploadVideo, { isLoading }] = useUploadVideoMutation();
-
-  // Получение списка видео из базы данных
-  const { data, error: fetchError, isLoading: isFetching } = useGetVideosQuery();
-
-  // Преобразуем полученные данные в массив видео
-  const videos: VideoType[] = Array.isArray(data) && data.length > 0 ? data : [];
-
-  console.log('Полученные видео с сервера:', videos); // Логируем полученные данные
 
   // Обработчик выбора файла
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,19 +88,9 @@ export default function AccountPage(): JSX.Element {
           <Checkbox>Фильтр 3</Checkbox>
         </VStack>
 
-        {/* Центральная часть с модальным окном */}
+        {/* Центральная часть с видео */}
         <Flex direction="column" align="center" justify="center" flex="1">
-          {isFetching ? (
-            <Text>Загрузка видео...</Text>
-          ) : fetchError ? (
-            <Text>Ошибка при загрузке видео.</Text>
-          ) : videos.length === 0 ? (
-            <Text>Нет доступных видео.</Text>
-          ) : (
-            videos.map((video: VideoType) => (
-              <VideoModal key={video.id} videoTitle={video.title} videoSrc={video.videoPath} />
-            ))
-          )}
+          {/* Видео теперь будут отображаться на MainPage */}
         </Flex>
 
         {/* Правый блок с чекбоксами для тегов */}
