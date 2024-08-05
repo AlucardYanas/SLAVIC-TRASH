@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { VideoType } from '../../types/types';
+import type { VideoType } from '../types/types';
 
 export const videosApi = createApi({
   reducerPath: 'videosApi',

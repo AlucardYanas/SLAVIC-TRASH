@@ -23,7 +23,7 @@ export default function AdminPage(): JSX.Element {
 
   const handleApprove = async () => {
     if (pendingVideos[currentIndex]) {
-      await approveVideo({ id: pendingVideos[currentIndex].id, tags: pendingVideos[currentIndex].tags || [] });
+      await approveVideo({ id: pendingVideos[currentIndex].id });
       refetch();
       setCurrentIndex((prevIndex) => (prevIndex + 1 < pendingVideos.length ? prevIndex + 1 : 0));
     }

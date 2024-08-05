@@ -21,6 +21,7 @@ module.exports = {
       },
       length: {
         type: Sequelize.INTEGER,
+        allowNull: true,
       },
       tags: {
         type: Sequelize.ARRAY(Sequelize.STRING),
@@ -28,6 +29,7 @@ module.exports = {
       },
       thumbnailPath: {
         type: Sequelize.STRING,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

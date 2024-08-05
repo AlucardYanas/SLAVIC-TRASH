@@ -1,7 +1,6 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const ffmpeg = require('fluent-ffmpeg');
 const { UploadVideo, Video } = require('../../db/models');
 
 const router = express.Router();
@@ -24,7 +23,6 @@ router.get('/pending', async (req, res) => {
 router.post('/approve/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { tags } = req.body;
     const uploadVideo = await UploadVideo.findByPk(id);
 
     if (!uploadVideo) {
@@ -35,33 +33,21 @@ router.post('/approve/:id', async (req, res) => {
     const newPath = path.join('public/videos', path.basename(oldPath));
     fs.renameSync(oldPath, newPath);
 
-    const thumbnailPath = path.join('public/thumbnails', `${path.basename(oldPath, path.extname(oldPath))}.png`);
-    ffmpeg(newPath)
-      .screenshots({
-        timestamps: ['00:00:01.000'],
-        filename: path.basename(thumbnailPath),
-        folder: 'public/thumbnails',
-        size: '320x240'
-      })
-      .on('end', async () => {
-        const video = await Video.create({
-          title: uploadVideo.title,
-          videoPath: newPath,
-          link: `/public/videos/${path.basename(newPath)}`,
-          length: uploadVideo.length,
-          tags,
-          thumbnailPath: `/public/thumbnails/${path.basename(thumbnailPath)}`,
-        });
+    // Logging the paths for debugging
+    console.log('Old path:', oldPath);
+    console.log('New path:', newPath);
 
-        await uploadVideo.destroy();
+    const video = await Video.create({
+      title: uploadVideo.title,
+      videoPath: newPath,
+      link: `/public/videos/${path.basename(newPath)}`,
+      length: uploadVideo.length, // This should be a valid number
+      thumbnailPath: '',  // Превьюшки пока нет, оставляем пустым
+    });
 
-        res.status(200).json(video);
-      })
-      .on('error', (err) => {
-        console.error('Ошибка создания превьюшки:', err);
-        res.status(500).json({ error: 'Не удалось создать превьюшку' });
-      });
+    await uploadVideo.destroy();
 
+    res.status(200).json(video);
   } catch (error) {
     console.error('Ошибка при одобрении видео:', error);
     res.status(500).json({ error: 'Не удалось одобрить видео' });

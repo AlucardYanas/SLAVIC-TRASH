@@ -28,11 +28,10 @@ export const uploadVideoApi = createApi({
       },
       providesTags: [{ type: 'PendingVideo', id: 'LIST' }],
     }),
-    approveVideo: builder.mutation<VideoType, { id: number; tags: string[] }>({
-      query: ({ id, tags }) => ({
+    approveVideo: builder.mutation<VideoType, { id: number }>({
+      query: ({ id }) => ({
         url: `/admin/approve/${id}`,
         method: 'POST',
-        body: { tags },
       }),
       invalidatesTags: [{ type: 'PendingVideo', id: 'LIST' }, { type: 'Video', id: 'LIST' }],
     }),

@@ -43,7 +43,7 @@ export default function VideoPlayer({ src, poster, onEnd }: VideoPlayerProps): J
   const updateProgress = () => {
     if (videoRef.current) {
       const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
-      setProgress(progress);
+      setProgress(isNaN(progress) ? 0 : progress); // Handle NaN value
     }
   };
 

@@ -1,7 +1,6 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const ffmpeg = require('fluent-ffmpeg');
 const { UploadVideo } = require('../../db/models');
 
 const router = express.Router();
@@ -25,24 +24,15 @@ router.post('/', upload.single('video'), async (req, res) => {
     const { title } = req.body;
     const videoPath = req.file.path;
 
-    // Получение длины видео с помощью ffmpeg
-    ffmpeg.ffprobe(videoPath, async (err, metadata) => {
-      if (err) {
-        console.error('Ошибка при получении метаданных видео:', err);
-        return res.status(500).json({ error: 'Failed to process video' });
-      }
-
-      const length = Math.floor(metadata.format.duration);
-
-      // Сохранение информации о видео в базе данных (временная запись)
-      const uploadVideo = await UploadVideo.create({
-        title,
-        videoPath,
-        length,
-      });
-
-      res.status(201).json({ message: 'Video uploaded successfully', uploadVideo });
+    // Сохранение информации о видео в базе данных (временная запись)
+    const uploadVideo = await UploadVideo.create({
+      title,
+      videoPath,
+      length: 0, // Установим длину видео в 0, так как мы временно не используем ffmpeg
+      approved: false,
     });
+
+    res.status(201).json({ message: 'Video uploaded successfully', uploadVideo });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to upload video' });
