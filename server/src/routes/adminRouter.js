@@ -2,8 +2,11 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { Video } = require('../../db/models');
+const { Storage } = require('@google-cloud/storage');
+require('dotenv').config(); // Загружаем переменные окружения из .env файла
 
 const router = express.Router();
+const storage = new Storage();
 
 // Получение всех видео, ожидающих одобрения
 router.get('/pending', async (req, res) => {
@@ -30,19 +33,8 @@ router.post('/approve/:id', async (req, res) => {
       return res.status(404).json({ error: 'Видео не найдено' });
     }
 
-    const oldPath = video.videoPath;
-    const newPath = path.join('public/videos', path.basename(oldPath));
-    fs.renameSync(oldPath, newPath);
-
-    // Remove the ffmpeg thumbnail creation code
-    video.videoPath = newPath;
-    video.link = `/public/videos/${path.basename(newPath)}`;
     video.approved = true;
-    video.tags = tags;
-
-    // Set a default thumbnail path if necessary
-    video.thumbnailPath = '/public/thumbnails/default.png'; // Default thumbnail
-
+    video.tags = tags || [];
     await video.save();
 
     res.status(200).json(video);
@@ -62,7 +54,16 @@ router.delete('/disapprove/:id', async (req, res) => {
       return res.status(404).json({ error: 'Видео не найдено' });
     }
 
-    fs.unlinkSync(video.videoPath);
+    const bucketName = process.env.GCS_BUCKET_NAME;
+    const fileName = path.basename(video.videoPath);
+
+    try {
+      await storage.bucket(bucketName).file(fileName).delete();
+    } catch (deleteError) {
+      console.error('Ошибка при удалении файла из GCS:', deleteError);
+      return res.status(500).json({ error: 'Failed to delete video from GCS' });
+    }
+
     await video.destroy();
 
     res.status(200).json({ message: 'Видео отклонено и удалено' });

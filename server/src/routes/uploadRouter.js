@@ -31,11 +31,9 @@ router.post('/', upload.single('video'), async (req, res) => {
     const { title } = req.body;
     const videoPath = req.file.path;
 
-    // Удалено: Получение длины видео с помощью ffmpeg
-
     // Загрузка видео в Google Cloud Storage
     const bucketName = process.env.GCS_BUCKET_NAME;
-    const destination = `uploads/${path.basename(videoPath)}`;
+    const destination = path.basename(videoPath);
 
     try {
       await storage.bucket(bucketName).upload(videoPath, {
@@ -81,14 +79,12 @@ router.post('/', upload.single('video'), async (req, res) => {
         transcription.alternatives.map(alternative => alternative.transcript).join('\n')
       ).join('\n\n');
 
-      // Удалено: Создание превьюшки для видео
-
       // Сохранение информации о видео в базе данных
       const video = await Video.create({
         title,
         videoPath: publicUrl,
         length: 0, // Длина видео больше не извлекается
-        approved: true,
+        approved: false, // Видео изначально не одобрено
         extractedTexts, // сохранение извлеченного текста
         transcribedText, // сохранение транскрибированного текста
         thumbnailPath: '', // Превью больше не создается

@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "slavicvideo",
+  "private_key_id": "cfbb33f63f61191c0f13aad994f3ce997f66bcda",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCi1hacKGLiSmj8\n3k6bUJec3iVVI5pdK0+MDaHjQwYhCsz47x/Oy2fKQ3QlWsHkaqB653l4oGHTl4SB\nOWMe+0wxuXDm7y2edhUKkzgr/FRrqetmsxe1nvMiW1NXUelQsfqBUvjlNFnfuV5g\n39710galFVYJY3gJXh4schPkX00Qiaj4/UZhQYubFXUmN8/yZutJzIMUHNPMmion\nn/NcBmqKJleYRbp3w3eHqzNah9okuO+blZ2h9fs16UA5wOLNJkUirafi9ZJyt8JJ\n5PwlrMUAr2AF0Sw2wOkHnFDXPx25mPaQ3IIPQAroRKDdmERkDFZPxmikVLCJkbwn\ncTKSHGaNAgMBAAECggEASK9CgWrflL39Nh5vPRHQ0zMvu9y8CymJhO0S3ZQt2LLv\nApEOhCq0Rgss/X2Q/coAn0vSo18Hu8Cu41W/4nTusmVhuZt6o/h2dPV5Bd1Iu5Qp\n4PpBM49jXOsh/OCxwhTnyjFEq17eXShrsddMOTMKR0cKU/+D9b5+vn0fVvmZNy9d\nCs8qyF1iQfay4bWo3pB1OCWTRCjP5JIrdFSDDh1xZExVwS3K49dJ3PP3z5mios4a\nTPHJPs4LZTp+j0uwzC5v5bqRpKgPCUal/NwRE/A+wPQJt8m+FVv7uNsQJgYBSGKM\nUmN5bcLCUXlG9ADMTRYIK8BieQYsgJsLotfr2SbKmwKBgQDTol5E+lwm0y87pSdJ\njq4QgjGSnlPWLRwbBcDmxcN/UgA7encRvFHLzaQI8iTmHmjhygzHelfiBCsDFQkr\nQlZe/zLHkqwYTrng5GlDB2KEKt/aRo80H5aQQHFyscfhl7qxsi0/12f8LpHmTxpj\nH7f5lEl140FBmJi9mK/viXu1vwKBgQDE+OmhLLelcsg/xm4A30jcLLH7TzSLp3tL\nJbRd4isaSPLv95Gnl+ieQtFYGdmwuHX/bmkAtwKo6TuIz8KHMq2GJX0Ygtp6AsIB\n7/FLZ+bBjaEMXLz/VwIm/pTLl+Fq/bA28E1lloZVtBRBglNUWWCbbVTkfr7pJdeI\nTzwRjwwuswKBgQCZJ/QY7yYpYsPX4llgPkVx5QaDGNmLMfIZDDzhxVUJmwpYAPSS\nfTqkxxli7/oMHw2/+TzuT3eyNVn7TQnpqIRhE0Zob5jjrnWObz5OJ9X/2BdQG6gf\nDI0lr71qR4ZjmC6f0lY00WqLchhcF/r8qUO29r2C9weOtSQ0cX9BVrmUeQKBgQCK\njRgxkjXfwByRl697F5S1ow7S2oT4kyeL1YrI2zU8eQHBwCAJhjZPVGrTEOPqheYi\ndXSQ1yqcy+pfstx/oysiCC61Vh394wC6wh+1zfEoRsp42qbq6TYPXdYmW8BpNOeF\nzYRzp+z4TgJNjjG1TGVDDyW+0FTTxRWVwT5cj4WfNwKBgC60lbGBeDRD0QH270zB\nnDjmOeaY2db3T/xBOxT0ptjnl7ackAVlqVqZ/Cd6iJW13vfFRPO+ZHGaxlbQRFoo\njUTcuYpTuKc5jToZ/vVgruw2T4B4OiRTNLP9RzRIvx307aqzxQSG1iqPNEc/wvo/\nNBwwMcGO7caBGl9QMVjlpZYH\n-----END PRIVATE KEY-----\n",
+  "client_email": "videoslavictrash@slavicvideo.iam.gserviceaccount.com",
+  "client_id": "118235741989802676315",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/videoslavictrash%40slavicvideo.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
