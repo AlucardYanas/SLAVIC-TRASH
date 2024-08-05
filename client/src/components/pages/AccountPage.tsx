@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { Checkbox, Container, Flex, VStack, Button, Input, Box } from '@chakra-ui/react';
+import { Checkbox, Container, Flex, VStack, Button, Input, Box, Text } from '@chakra-ui/react';
 import VideoModal from '../ui/VideoModal';
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
+import { useGetVideosQuery } from '../../redux/apiSlice';
+import type { VideoType } from '../../types/types';
 
 export default function AccountPage(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [videoTitle, setVideoTitle] = useState<string>('');
   const [uploadVideo, { isLoading }] = useUploadVideoMutation();
+
+  // Получение списка видео из базы данных
+  const { data, error: fetchError, isLoading: isFetching } = useGetVideosQuery();
+
+  // Преобразуем полученные данные в массив видео
+  const videos: VideoType[] = Array.isArray(data) && data.length > 0 ? data : [];
+
+  console.log('Полученные видео с сервера:', videos); // Логируем полученные данные
 
   // Обработчик выбора файла
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,15 +39,15 @@ export default function AccountPage(): JSX.Element {
 
       try {
         await uploadVideo(formData).unwrap();
-        alert('Video uploaded successfully');
+        alert('Видео успешно загружено');
         setSelectedFile(null);
         setVideoTitle('');
       } catch (error) {
-        console.error('Upload failed:', error);
-        alert('Failed to upload video');
+        console.error('Ошибка загрузки:', error);
+        alert('Не удалось загрузить видео');
       }
     } else {
-      alert('Please select a video file and enter a title');
+      alert('Пожалуйста, выберите файл видео и введите название');
     }
   };
 
@@ -84,24 +94,31 @@ export default function AccountPage(): JSX.Element {
       <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
         {/* Левый блок с чекбоксами для фильтрации */}
         <VStack align="start" spacing={10}>
-          <Checkbox>Filter Option 1</Checkbox>
-          <Checkbox>Filter Option 2</Checkbox>
-          <Checkbox>Filter Option 3</Checkbox>
+          <Checkbox>Фильтр 1</Checkbox>
+          <Checkbox>Фильтр 2</Checkbox>
+          <Checkbox>Фильтр 3</Checkbox>
         </VStack>
 
         {/* Центральная часть с модальным окном */}
         <Flex direction="column" align="center" justify="center" flex="1">
-          <VideoModal
-            videoTitle="Sample Video"
-            videoSrc="https://videos.pexels.com/video-files/9001899/9001899-hd_1920_1080_25fps.mp4"
-          />
+          {isFetching ? (
+            <Text>Загрузка видео...</Text>
+          ) : fetchError ? (
+            <Text>Ошибка при загрузке видео.</Text>
+          ) : videos.length === 0 ? (
+            <Text>Нет доступных видео.</Text>
+          ) : (
+            videos.map((video: VideoType) => (
+              <VideoModal key={video.id} videoTitle={video.title} videoSrc={video.videoPath} />
+            ))
+          )}
         </Flex>
 
         {/* Правый блок с чекбоксами для тегов */}
         <VStack align="end" spacing={10}>
-          <Checkbox>Tag Option 1</Checkbox>
-          <Checkbox>Tag Option 2</Checkbox>
-          <Checkbox>Tag Option 3</Checkbox>
+          <Checkbox>Тег 1</Checkbox>
+          <Checkbox>Тег 2</Checkbox>
+          <Checkbox>Тег 3</Checkbox>
         </VStack>
       </Flex>
     </Container>

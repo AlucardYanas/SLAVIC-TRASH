@@ -22,12 +22,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
-      thumbnailPath: DataTypes.STRING,  // Добавлено поле для хранения пути к превьюшке
+      thumbnailPath: DataTypes.STRING, // Поле для хранения пути к превьюшке
+      extractedTexts: DataTypes.ARRAY(DataTypes.STRING), // Поле для хранения извлечённых текстов
+      transcribedText: DataTypes.TEXT, // Поле для хранения транскрибированной речи
     },
     {
       sequelize,
       modelName: 'Video',
-    },
+    }
   );
 
   return Video;

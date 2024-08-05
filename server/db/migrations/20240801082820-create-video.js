@@ -32,6 +32,14 @@ module.exports = {
       thumbnailPath: {
         type: Sequelize.STRING,
       },
+      extractedTexts: { // Новый столбец
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        allowNull: true,
+      },
+      transcribedText: { // Новый столбец
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

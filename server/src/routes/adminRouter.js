@@ -1,7 +1,6 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const ffmpeg = require('fluent-ffmpeg');
 const { Video } = require('../../db/models');
 
 const router = express.Router();
@@ -35,29 +34,18 @@ router.post('/approve/:id', async (req, res) => {
     const newPath = path.join('public/videos', path.basename(oldPath));
     fs.renameSync(oldPath, newPath);
 
-    const thumbnailPath = path.join('public/thumbnails', `${path.basename(oldPath, path.extname(oldPath))}.png`);
-    ffmpeg(newPath)
-      .screenshots({
-        timestamps: ['00:00:01.000'],
-        filename: path.basename(thumbnailPath),
-        folder: 'public/thumbnails',
-        size: '320x240'
-      })
-      .on('end', async () => {
-        video.videoPath = newPath;
-        video.link = `/public/videos/${path.basename(newPath)}`;
-        video.approved = true;
-        video.tags = tags;
-        video.thumbnailPath = `/public/thumbnails/${path.basename(thumbnailPath)}`;
-        await video.save();
+    // Remove the ffmpeg thumbnail creation code
+    video.videoPath = newPath;
+    video.link = `/public/videos/${path.basename(newPath)}`;
+    video.approved = true;
+    video.tags = tags;
 
-        res.status(200).json(video);
-      })
-      .on('error', (err) => {
-        console.error('Ошибка создания превьюшки:', err);
-        res.status(500).json({ error: 'Не удалось создать превьюшку' });
-      });
+    // Set a default thumbnail path if necessary
+    video.thumbnailPath = '/public/thumbnails/default.png'; // Default thumbnail
 
+    await video.save();
+
+    res.status(200).json(video);
   } catch (error) {
     console.error('Ошибка при одобрении видео:', error);
     res.status(500).json({ error: 'Не удалось одобрить видео' });

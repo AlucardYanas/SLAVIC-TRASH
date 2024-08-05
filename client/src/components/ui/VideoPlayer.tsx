@@ -1,13 +1,15 @@
+// src/components/ui/VideoPlayer.tsx
+
 import React, { useRef, useState } from 'react';
 import { Box, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb, IconButton } from '@chakra-ui/react';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
-type VideoPlayerProps = {
+interface VideoPlayerProps {
   src: string;
   poster?: string;
-};
+}
 
-export default function VideoPlayer({ src, poster }: VideoPlayerProps): JSX.Element {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, poster }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
@@ -107,4 +109,6 @@ export default function VideoPlayer({ src, poster }: VideoPlayerProps): JSX.Elem
       </Flex>
     </Box>
   );
-}
+};
+
+export default VideoPlayer;

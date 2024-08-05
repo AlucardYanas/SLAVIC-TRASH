@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Flex, VStack, Box, Text, Alert, AlertIcon } from '@chakra-ui/react';
 import AdminModal from '../ui/AdminModal';
-import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation } from '../../redux/upload/uploadSlice';
+import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation, useGetExtractedTextsQuery } from '../../redux/upload/uploadSlice';
 import type { VideoType } from '../../types/types';
 
 export default function AdminPage(): JSX.Element {
@@ -10,6 +10,11 @@ export default function AdminPage(): JSX.Element {
   const [disapproveVideo] = useDisapproveVideoMutation();
   const [selectedVideo, setSelectedVideo] = useState<VideoType | null>(null);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+  // Fetching extracted texts
+  const { data: extractedTexts } = useGetExtractedTextsQuery(selectedVideo?.id || 0, {
+    skip: !selectedVideo,
+  });
 
   useEffect(() => {
     if (error) {
@@ -53,11 +58,21 @@ export default function AdminPage(): JSX.Element {
         </VStack>
         {selectedVideo && (
           <>
-            <AdminModal videoSrc={selectedVideo.videoPath} />
+            <AdminModal videoTitle={selectedVideo.title} videoSrc={selectedVideo.videoPath} />
             <Flex mt={4}>
-              <Button mr={2} colorScheme="green" onClick={handleApprove}>Approve</Button>
-              <Button colorScheme="red" onClick={handleDisapprove}>Disapprove</Button>
+              <Button mr={2} colorScheme="green" onClick={handleApprove}>Одобрить</Button>
+              <Button colorScheme="red" onClick={handleDisapprove}>Отклонить</Button>
             </Flex>
+            <Box mt={4}>
+              <Text fontWeight="bold">Извлеченные тексты:</Text>
+              {extractedTexts?.texts.map((text, index) => (
+                <Text key={index}>{text}</Text>
+              ))}
+            </Box>
+            <Box mt={4}>
+              <Text fontWeight="bold">Транскрибированный текст:</Text>
+              <Text>{selectedVideo.transcribedText}</Text>
+            </Box>
           </>
         )}
       </Flex>

@@ -1,3 +1,5 @@
+// redux/upload/uploadSlice.ts
+
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { UploadVideoResponse, VideoType } from '../../types/types';
 
@@ -5,7 +7,7 @@ import type { UploadVideoResponse, VideoType } from '../../types/types';
 export const uploadVideoApi = createApi({
   reducerPath: 'uploadVideoApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
-  tagTypes: ['UploadVideo', 'Video', 'PendingVideo'], // Добавляем теги для видео и ожидающих видео
+  tagTypes: ['UploadVideo', 'Video', 'PendingVideo'],
   endpoints: (builder) => ({
     uploadVideo: builder.mutation<UploadVideoResponse, FormData>({
       query: (formData) => ({
@@ -13,7 +15,7 @@ export const uploadVideoApi = createApi({
         method: 'POST',
         body: formData,
       }),
-      invalidatesTags: [{ type: 'Video', id: 'LIST' }], // Инвалидируем кеш списка видео
+      invalidatesTags: [{ type: 'Video', id: 'LIST' }],
     }),
     getPendingVideos: builder.query<VideoType[], void>({
       query: () => '/admin/pending',
@@ -43,6 +45,14 @@ export const uploadVideoApi = createApi({
       }),
       invalidatesTags: [{ type: 'PendingVideo', id: 'LIST' }],
     }),
+    getExtractedTexts: builder.query<{ texts: string[] }, number>({
+      query: (videoId) => `/videos/${videoId}/texts`,
+      providesTags: (result, error, videoId) => [{ type: 'Video', id: videoId }],
+    }),
+    getAllVideos: builder.query<VideoType[], void>({
+      query: () => '/videos',
+      providesTags: [{ type: 'Video', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -51,4 +61,6 @@ export const {
   useGetPendingVideosQuery,
   useApproveVideoMutation,
   useDisapproveVideoMutation,
+  useGetExtractedTextsQuery,
+  useGetAllVideosQuery,
 } = uploadVideoApi;

@@ -2,10 +2,9 @@
 
 import React, { useState } from 'react';
 import { Checkbox, Container, Flex, VStack, Box, Text } from '@chakra-ui/react';
-import VideoModal from '../ui/VideoModal'; // Убедитесь, что путь к компоненту правильный
+import VideoModal from '../ui/VideoModal';
 import { useGetVideosQuery } from '../../redux/apiSlice';
 import type { VideoType } from '../../types/types';
-import VideoPlayer from '../ui/VideoPlayer';
 
 export default function MainPage(): JSX.Element {
   const [filters, setFilters] = useState({
@@ -14,7 +13,10 @@ export default function MainPage(): JSX.Element {
     lessThan30: false,
   });
 
-  const { data: videos, error, isLoading } = useGetVideosQuery();
+  const { data, error, isLoading } = useGetVideosQuery();
+
+  // Безопасная обработка данных видео
+  const videos: VideoType[] = Array.isArray(data) ? data : []; // Проверяем, является ли data массивом
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
@@ -24,7 +26,7 @@ export default function MainPage(): JSX.Element {
     }));
   };
 
-  const filteredVideos = videos?.filter((video) => {
+  const filteredVideos = videos.filter((video) => {
     if (filters.lessThan10 && video.length <= 10) {
       return true;
     }
@@ -54,22 +56,21 @@ export default function MainPage(): JSX.Element {
         </VStack>
 
         {/* Центральная часть с видео */}
-        {/* <Flex direction="column" align="center" justify="center" flex="1">
+        <Flex direction="column" align="center" justify="center" flex="1">
           {isLoading ? (
             <Text>Загрузка...</Text>
           ) : error ? (
             <Text>Ошибка загрузки видео.</Text>
+          ) : filteredVideos.length === 0 ? (
+            <Text>Нет доступных видео.</Text>
           ) : (
-            filteredVideos?.map((video: VideoType) => (
+            filteredVideos.map((video: VideoType) => (
               <Box key={video.id} mb={4}>
                 <VideoModal videoTitle={video.title} videoSrc={video.link} />
               </Box>
             ))
           )}
-        </Flex> */}
-        <Box>
-          <VideoPlayer src="" />
-        </Box>
+        </Flex>
 
         {/* Правый блок с чекбоксами для тегов */}
         <VStack align="end" spacing={10}>
