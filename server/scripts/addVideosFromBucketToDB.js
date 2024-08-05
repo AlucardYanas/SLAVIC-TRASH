@@ -75,4 +75,4 @@ async function addVideosFromBucketToDB() {
   }
 }
 
-addVideosFromBucketToDB();
+module.exports = addVideosFromBucketToDB; // Экспортируем функцию
