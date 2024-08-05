@@ -16,7 +16,7 @@ export default function MainPage(): JSX.Element {
   const handleVideoEnd = () => {
     if (currentVideoIndex < videos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
-    }
+    } 
   };
 
   // Обработчик переключения на следующее видео
