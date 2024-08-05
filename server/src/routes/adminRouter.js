@@ -5,6 +5,19 @@ const { UploadVideo, Video } = require('../../db/models');
 
 const router = express.Router();
 
+// Проверка наличия файла
+const checkFileExists = (filePath) => {
+  return new Promise((resolve, reject) => {
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+};
+
 // Получение всех видео, ожидающих одобрения
 router.get('/pending', async (req, res) => {
   try {
@@ -12,7 +25,10 @@ router.get('/pending', async (req, res) => {
     if (pendingVideos.length === 0) {
       return res.status(200).json({ message: 'No new videos for approval' });
     }
-    res.status(200).json(pendingVideos);
+    res.status(200).json(pendingVideos.map(video => ({
+      ...video.toJSON(),
+      videoPath: `/server/${video.videoPath}` // Обновляем путь для клиента
+    })));
   } catch (error) {
     console.error('Ошибка при получении видео:', error);
     res.status(500).json({ error: 'Не удалось получить видео' });
@@ -31,17 +47,24 @@ router.post('/approve/:id', async (req, res) => {
 
     const oldPath = uploadVideo.videoPath;
     const newPath = path.join('public/videos', path.basename(oldPath));
-    fs.renameSync(oldPath, newPath);
 
-    // Logging the paths for debugging
     console.log('Old path:', oldPath);
     console.log('New path:', newPath);
 
+    // Проверка существования файла
+    try {
+      await checkFileExists(oldPath);
+    } catch (error) {
+      console.error('Файл не найден:', oldPath);
+      return res.status(404).json({ error: 'Файл не найден' });
+    }
+
+    fs.renameSync(oldPath, newPath);
+
     const video = await Video.create({
       title: uploadVideo.title,
-      videoPath: newPath,
-      link: `/public/videos/${path.basename(newPath)}`,
-      length: uploadVideo.length, // This should be a valid number
+      videoPath: `/server/public/videos/${path.basename(newPath)}`,
+      length: 0, // This should be a valid number
       thumbnailPath: '',  // Превьюшки пока нет, оставляем пустым
     });
 

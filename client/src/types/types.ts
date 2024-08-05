@@ -7,10 +7,7 @@ import type { VideoSchema } from '../utils/validators';
 export type VideoType = z.infer<typeof VideoSchema> & {
   id: number;
   videoPath: string;
-  link: string;
   length: number;
-  tags: string[];
-  approved: boolean;
   thumbnailPath?: string;
 };
 

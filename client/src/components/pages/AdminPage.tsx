@@ -9,7 +9,7 @@ export default function AdminPage(): JSX.Element {
   const [approveVideo] = useApproveVideoMutation();
   const [disapproveVideo] = useDisapproveVideoMutation();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertMessage, setAlertMessage] = useState(null);
 
   useEffect(() => {
     if (error) {
@@ -48,7 +48,7 @@ export default function AdminPage(): JSX.Element {
         )}
         {pendingVideos.length > 0 && (
           <>
-            <VideoPlayer src={pendingVideos[currentIndex].videoPath} />
+            <VideoPlayer src={pendingVideos[currentIndex]?.videoPath} />
             <Flex mt={4}>
               <Button mr={2} colorScheme="green" onClick={handleApprove}>Approve</Button>
               <Button colorScheme="red" onClick={handleDisapprove}>Disapprove</Button>

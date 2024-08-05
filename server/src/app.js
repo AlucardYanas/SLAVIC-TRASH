@@ -10,7 +10,10 @@ const uploadRouter = require('./routes/uploadRouter');
 const adminRouter = require('./routes/adminRouter');
 const watchedVideoRouter = require('./routes/watchedVideoRouter');
 const historyRouter = require('./routes/historyRouter');
+// const ffmpeg = require('ffmpeg');
+// const ffprobe = require('ffprobe');
 
+// console.log(ffprobe('./public/videos/1722851628064-193124085.mp4').then(console.log));
 const app = express();
 
 

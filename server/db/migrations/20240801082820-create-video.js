@@ -16,17 +16,12 @@ module.exports = {
       videoPath: {
         type: Sequelize.STRING,
       },
-      link: {
-        type: Sequelize.STRING,
-      },
+
       length: {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
-      tags: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: true,
-      },
+
       thumbnailPath: {
         type: Sequelize.STRING,
         allowNull: true,
