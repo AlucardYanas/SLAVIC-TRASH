@@ -1,0 +1,14 @@
+/* styles/GlobalStyles.css */
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background-image: url('/94f1112fca6461da18e3d44752b18020.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+  }
+  
