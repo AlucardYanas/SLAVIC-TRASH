@@ -1,20 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { videosApi } from './apiSlice';
 import authSlice from './auth/authSlice';
-import { viewHistoryApi } from './like/likeSlice';
+import { likeApi } from './like/likeSlice'; // Импорт нового слайса
 import { uploadVideoApi } from './upload/uploadSlice';
 
 export const store = configureStore({
   reducer: {
     [videosApi.reducerPath]: videosApi.reducer,
-    [viewHistoryApi.reducerPath]: viewHistoryApi.reducer,
+    [likeApi.reducerPath]: likeApi.reducer, // Используем новый слайс
     [uploadVideoApi.reducerPath]: uploadVideoApi.reducer,
     auth: authSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       videosApi.middleware,
-      viewHistoryApi.middleware,
+      likeApi.middleware, // Используем middleware нового слайса
       uploadVideoApi.middleware
     ),
 });
