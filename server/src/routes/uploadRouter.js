@@ -1,5 +1,4 @@
 const express = require('express');
-const multer = require('multer');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
@@ -16,24 +15,11 @@ const router = express.Router();
 const videoIntelligenceClient = new VideoIntelligenceServiceClient();
 const storage = new Storage();
 
-// Настройка хранилища multer для промежуточной папки
-const storageConfig = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/uploads'); // Промежуточная папка для загруженных видео
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`); // Уникальное имя файла
-  },
-});
-
-const upload = multer({ storage: storageConfig });
-
 // Функция для создания превью и получения длины видео
 const processVideo = (videoPath, thumbnailPath) =>
   new Promise((resolve, reject) => {
     ffmpeg(videoPath)
-      .on('filenames', filenames => {
+      .on('filenames', (filenames) => {
         console.log('Скриншоты будут сохранены как: ' + filenames.join(', '));
       })
       .on('end', () => {
@@ -46,7 +32,7 @@ const processVideo = (videoPath, thumbnailPath) =>
           resolve({ thumbnailPath, length });
         });
       })
-      .on('error', err => {
+      .on('error', (err) => {
         console.error(err);
         reject(err);
       })
@@ -76,10 +62,14 @@ async function uploadToGCS(filePath, destination, folder = '') {
 }
 
 // Маршрут для загрузки видео
-router.post('/', upload.single('video'), async (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const { title } = req.body;
-    const videoPath = req.file.path;
+    const { title, videoPath } = req.body; // Принимаем путь к видео из тела запроса
+
+    // Проверяем, что путь к видео предоставлен
+    if (!videoPath) {
+      return res.status(400).json({ error: 'Необходимо указать путь к видео' });
+    }
 
     // Создание превью и получение длины видео
     const thumbnailFilename = `${path.basename(videoPath, path.extname(videoPath))}.png`;
@@ -120,8 +110,8 @@ router.post('/', upload.single('video'), async (req, res) => {
 
     // Транскрибирование аудио в текст
     const speechTranscriptions = response.annotationResults[0]?.speechTranscriptions || [];
-    const transcribedText = speechTranscriptions.map(transcription =>
-      transcription.alternatives.map(alternative => alternative.transcript).join('\n')
+    const transcribedText = speechTranscriptions.map((transcription) =>
+      transcription.alternatives.map((alternative) => alternative.transcript).join('\n')
     ).join('\n\n');
 
     // Сохранение информации о видео в базе данных
