@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Flex, VStack, Box, Text, Alert, AlertIcon } from '@chakra-ui/react';
+import { Button, Container, Flex, Text, Alert, AlertIcon } from '@chakra-ui/react';
 import AdminVideoPlayer from '../ui/AdminVideoPlayer';
-import { useGetPendingVideosQuery, useApproveVideoMutation, useDisapproveVideoMutation } from '../../redux/upload/uploadSlice';
-import type { VideoType } from '../../types/types';
+import {
+  useGetPendingVideosQuery,
+  useApproveVideoMutation,
+  useDisapproveVideoMutation,
+} from '../../redux/upload/uploadSlice';
 
 export default function AdminPage(): JSX.Element {
   const { data: pendingVideos = [], refetch, error } = useGetPendingVideosQuery();
@@ -10,7 +13,7 @@ export default function AdminPage(): JSX.Element {
   const [disapproveVideo] = useDisapproveVideoMutation();
   const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  console.log(approveVideo)
+  console.log(approveVideo);
 
   useEffect(() => {
     if (error) {
@@ -22,26 +25,26 @@ export default function AdminPage(): JSX.Element {
     }
   }, [pendingVideos, error]);
 
-  const handleApprove = async () => {
+  const handleNextVideo = (): void => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % pendingVideos.length);
+  };
+
+  const handleApprove = async (): Promise<void> => {
     const selectedVideo = pendingVideos[currentVideoIndex];
     if (selectedVideo) {
       await approveVideo({ id: selectedVideo.id });
-      refetch();
+      await refetch();
       handleNextVideo();
     }
   };
 
-  const handleDisapprove = async () => {
+  const handleDisapprove = async (): Promise<void> => {
     const selectedVideo = pendingVideos[currentVideoIndex];
     if (selectedVideo) {
       await disapproveVideo(selectedVideo.id);
-      refetch();
+      await refetch();
       handleNextVideo();
     }
-  };
-
-  const handleNextVideo = () => {
-    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % pendingVideos.length);
   };
 
   const currentVideo = pendingVideos[currentVideoIndex];
@@ -59,10 +62,10 @@ export default function AdminPage(): JSX.Element {
           <>
             <AdminVideoPlayer src={currentVideo.videoPath} />
             <Flex mt={4}>
-              <Button mr={2} colorScheme="green" onClick={handleApprove}>
+              <Button mr={2} colorScheme="green" onClick={() => handleApprove}>
                 Одобрить
               </Button>
-              <Button colorScheme="red" onClick={handleDisapprove}>
+              <Button colorScheme="red" onClick={() => handleDisapprove}>
                 Отклонить
               </Button>
             </Flex>

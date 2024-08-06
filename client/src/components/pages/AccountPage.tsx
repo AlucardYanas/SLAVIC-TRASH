@@ -17,9 +17,9 @@ import {
   ModalCloseButton,
   SimpleGrid,
   AspectRatio,
-  IconButton,  // Импортируем IconButton
+  IconButton, // Импортируем IconButton
 } from '@chakra-ui/react';
-import { FaTrash } from 'react-icons/fa';  // Импортируем иконку для кнопки удаления
+import { FaTrash } from 'react-icons/fa'; // Импортируем иконку для кнопки удаления
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
 import { useGetLikedVideosQuery, useUnlikeVideoMutation } from '../../redux/like/likeSlice'; // Импортируем мутацию удаления лайка
 import VideoPlayer from '../ui/VideoPlayer'; // Импортируем видеоплеер
@@ -35,7 +35,7 @@ export default function AccountPage(): JSX.Element {
   const [uploadVideo, { isLoading }] = useUploadVideoMutation();
 
   const userId = useSelector((state: RootState) =>
-    state.auth.user.status === 'logged' ? state.auth.user.id : null
+    state.auth.user.status === 'logged' ? state.auth.user.id : null,
   );
 
   // Используем RTK Query для получения данных о понравившихся видео
@@ -53,28 +53,28 @@ export default function AccountPage(): JSX.Element {
   // Мутация для удаления лайка
   const [unlikeVideo] = useUnlikeVideoMutation();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
     }
   };
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setVideoTitle(event.target.value);
   };
 
   // Функция для проверки нежелательного контента
-  const isUndesirableContent = (title: string) => {
+  const isUndesirableContent = (title: string): boolean => {
     const undesirableKeywords = ['bad', 'offensive', 'undesirable'];
-    return undesirableKeywords.some((keyword) =>
-      title.toLowerCase().includes(keyword)
-    );
+    return undesirableKeywords.some((keyword) => title.toLowerCase().includes(keyword));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     if (!selectedFile || !videoTitle || userId === null) {
       // Если нет файла, заголовка или пользователь не авторизован
-      setAlertMessage('Пожалуйста, выберите файл видео, введите название и убедитесь, что вы авторизованы.');
+      setAlertMessage(
+        'Пожалуйста, выберите файл видео, введите название и убедитесь, что вы авторизованы.',
+      );
       setAlertStatus('info');
       setShowAlert(true);
       return; // Выход из функции, если условия не выполнены
@@ -98,10 +98,10 @@ export default function AccountPage(): JSX.Element {
       setAlertStatus('success');
       setSelectedFile(null);
       setVideoTitle('');
-    } catch (error: any) {
-      console.error('Ошибка загрузки:', error);
+    } catch (err: any) {
+      console.error('Ошибка загрузки:', err);
 
-      if (error.status === 400) {
+      if (err.status === 400) {
         // Если сервер вернул 400, это значит, что видео содержит нежелательный контент
         setAlertMessage('Видео содержит нежелательный контент и не может быть загружено.');
         setAlertStatus('warning');
@@ -115,31 +115,33 @@ export default function AccountPage(): JSX.Element {
   };
 
   // Открытие модального окна для видео
-  const handleVideoSelect = (index: number) => {
+  const handleVideoSelect = (index: number): void => {
     setCurrentVideoIndex(index);
     setIsModalOpen(true);
   };
 
   // Закрытие модального окна
-  const handleCloseModal = () => {
+  const handleCloseModal = (): void => {
     setIsModalOpen(false);
     setCurrentVideoIndex(0); // Возвращаем индекс на начало при закрытии
   };
 
-  const handleNextVideo = () => {
+  const handleNextVideo = (): void => {
     if (likedVideos && likedVideos.length > 0) {
       setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % likedVideos.length);
     }
   };
 
-  const handlePrevVideo = () => {
+  const handlePrevVideo = (): void => {
     if (likedVideos && likedVideos.length > 0) {
-      setCurrentVideoIndex((prevIndex) => (prevIndex - 1 + likedVideos.length) % likedVideos.length);
+      setCurrentVideoIndex(
+        (prevIndex) => (prevIndex - 1 + likedVideos.length) % likedVideos.length,
+      );
     }
   };
 
   // Функция для удаления видео из избранного
-  const handleUnlike = async (videoId: number) => {
+  const handleUnlike = async (videoId: number): Promise<void> => {
     if (!userId) {
       console.error('Пользователь не авторизован');
       return;
@@ -172,7 +174,7 @@ export default function AccountPage(): JSX.Element {
               <Image
                 src="/yee-boy.gif" // GIF Shrek с мечом, расположенный в папке public
                 alt="Funny Shrek GIF"
-                boxSize="60vh"  // Размер GIF
+                boxSize="60vh" // Размер GIF
                 mb={4}
                 objectFit="cover"
               />
@@ -212,7 +214,7 @@ export default function AccountPage(): JSX.Element {
         <Button
           colorScheme="teal"
           variant="solid"
-          onClick={handleSubmit}
+          onClick={() => handleSubmit}
           isLoading={isLoading}
         >
           Отправить
@@ -224,27 +226,25 @@ export default function AccountPage(): JSX.Element {
         <Text fontSize="2xl" mb={4}>
           Видео, которые вам понравились
         </Text>
-        {isLoadingLikedVideos ? (
-          <Spinner size="xl" />
-        ) : error ? (
-          <Text>Ошибка при загрузке данных.</Text>
-        ) : (
+        {isLoadingLikedVideos && <Spinner size="xl" />}
+        {!isLoadingLikedVideos && error && <Text>Ошибка при загрузке данных.</Text>}
+        {!isLoadingLikedVideos && !error && (
           <SimpleGrid columns={[1, 2, 3]} spacing={8} w="full" maxW="1200px">
-            {likedVideos?.map((video: VideoType, index: number) => ( // Добавляем типизацию
+            {likedVideos?.map((video: VideoType, index: number) => (
               <Box
                 key={video.id}
                 p={4}
                 borderWidth="1px"
                 borderRadius="lg"
                 overflow="hidden"
-                position="relative" // Добавляем позиционирование
-                onClick={() => handleVideoSelect(index)} // Выбор видео для просмотра
+                position="relative"
+                onClick={() => handleVideoSelect(index)}
                 cursor="pointer"
-                _hover={{ bg: "gray.100" }} // Эффект наведения
+                _hover={{ bg: 'gray.100' }}
               >
                 <AspectRatio ratio={16 / 9}>
                   <Image
-                    src={video.thumbnailPath} // Убедитесь, что у вас есть запасной путь
+                    src={video.thumbnailPath}
                     alt={video.title}
                     boxSize="full"
                     objectFit="cover"
@@ -253,7 +253,6 @@ export default function AccountPage(): JSX.Element {
                 <Text noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
                   {video.title}
                 </Text>
-                {/* Кнопка удаления лайка */}
                 <IconButton
                   aria-label="Удалить из избранного"
                   icon={<FaTrash />}
@@ -263,8 +262,8 @@ export default function AccountPage(): JSX.Element {
                   top="4"
                   right="4"
                   onClick={(e) => {
-                    e.stopPropagation(); // Останавливаем всплытие события
-                    handleUnlike(video.id);
+                    e.stopPropagation();
+                    void handleUnlike(video.id);
                   }}
                 />
               </Box>
