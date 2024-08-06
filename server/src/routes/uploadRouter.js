@@ -1,14 +1,18 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
 const { Video } = require('../../db/models');
 const { VideoIntelligenceServiceClient } = require('@google-cloud/video-intelligence');
 const { Storage } = require('@google-cloud/storage');
-require('dotenv').config(); // Загружаем переменные окружения из .env файла
+require('dotenv').config();
+
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+ffmpeg.setFfprobePath(ffprobeInstaller.path);
 
 const router = express.Router();
-
-// Инициализация клиентов Google Cloud
 const videoIntelligenceClient = new VideoIntelligenceServiceClient();
 const storage = new Storage();
 
@@ -25,11 +29,46 @@ const storageConfig = multer.diskStorage({
 
 const upload = multer({ storage: storageConfig });
 
+// Функция для создания превью и получения длины видео
+const processVideo = (videoPath, thumbnailPath) =>
+  new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .on('filenames', filenames => {
+        console.log('Скриншоты будут сохранены как: ' + filenames.join(', '));
+      })
+      .on('end', () => {
+        console.log('Скриншот создан');
+        ffmpeg.ffprobe(videoPath, (err, metadata) => {
+          if (err) {
+            return reject(err);
+          }
+          const length = Math.ceil(metadata.format.duration);
+          resolve({ thumbnailPath, length });
+        });
+      })
+      .on('error', err => {
+        console.error(err);
+        reject(err);
+      })
+      .screenshots({
+        timestamps: ['1'],
+        filename: path.basename(thumbnailPath),
+        folder: path.dirname(thumbnailPath),
+        size: '320x240'
+      });
+  });
+
+
 // Маршрут для загрузки видео
 router.post('/', upload.single('video'), async (req, res) => {
   try {
     const { title } = req.body;
     const videoPath = req.file.path;
+
+    // Создание превью и получение длины видео
+    const thumbnailFilename = `${path.basename(videoPath, path.extname(videoPath))}.png`;
+    const thumbnailPath = path.join('public/thumbnails', thumbnailFilename);
+    const { length } = await processVideo(videoPath, thumbnailPath);
 
     // Загрузка видео в Google Cloud Storage
     const bucketName = process.env.GCS_BUCKET_NAME;
@@ -83,11 +122,11 @@ router.post('/', upload.single('video'), async (req, res) => {
       const video = await Video.create({
         title,
         videoPath: publicUrl,
-        length: 0, // Длина видео больше не извлекается
-        approved: false, // Видео изначально не одобрено
-        extractedTexts, // сохранение извлеченного текста
-        transcribedText, // сохранение транскрибированного текста
-        thumbnailPath: '', // Превью больше не создается
+        length,
+        approved: false,
+        extractedTexts,
+        transcribedText,
+        thumbnailPath: thumbnailFilename,
       });
 
       res.status(201).json({ message: 'Video uploaded and analyzed successfully', video });
