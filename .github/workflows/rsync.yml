@@ -1,4 +1,4 @@
-name: '[CI] - sync stack with manager node'
+name: '[CI] - send code to server'
 
 on: workflow_dispatch
 
