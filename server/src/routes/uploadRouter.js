@@ -51,13 +51,29 @@ const processVideo = (videoPath, thumbnailPath) =>
         reject(err);
       })
       .screenshots({
-        timestamps: ['1'],
-        filename: path.basename(thumbnailPath),
-        folder: path.dirname(thumbnailPath),
-        size: '320x240'
+        timestamps: ['1'], // Временная метка, где делается скриншот
+        filename: path.basename(thumbnailPath), // Имя файла для скриншота
+        folder: path.dirname(thumbnailPath), // Папка для сохранения скриншота
+        size: '320x240', // Размер скриншота
       });
   });
 
+// Функция для загрузки файла в Google Cloud Storage
+async function uploadToGCS(filePath, destination, folder = '') {
+  const bucketName = process.env.GCS_BUCKET_NAME;
+  const destinationPath = folder ? `${folder}/${destination}` : destination; // Добавляем папку, если она указана
+
+  await storage.bucket(bucketName).upload(filePath, {
+    destination: destinationPath,
+    public: true, // Делает файл доступным для публичного доступа
+    metadata: {
+      cacheControl: 'public, max-age=31536000',
+    },
+  });
+
+  const publicUrl = `https://storage.googleapis.com/${bucketName}/${destinationPath}`;
+  return publicUrl;
+}
 
 // Маршрут для загрузки видео
 router.post('/', upload.single('video'), async (req, res) => {
@@ -68,72 +84,58 @@ router.post('/', upload.single('video'), async (req, res) => {
     // Создание превью и получение длины видео
     const thumbnailFilename = `${path.basename(videoPath, path.extname(videoPath))}.png`;
     const thumbnailPath = path.join('public/thumbnails', thumbnailFilename);
+
     const { length } = await processVideo(videoPath, thumbnailPath);
 
-    // Загрузка видео в Google Cloud Storage
-    const bucketName = process.env.GCS_BUCKET_NAME;
-    const destination = path.basename(videoPath);
+    // Загрузка видео в корень бакета и скриншота в папку screenshots
+    const videoPublicUrl = await uploadToGCS(videoPath, path.basename(videoPath));
+    const thumbnailPublicUrl = await uploadToGCS(thumbnailPath, path.basename(thumbnailPath), 'screenshots'); // Загрузка в папку 'screenshots'
 
-    try {
-      await storage.bucket(bucketName).upload(videoPath, {
-        destination,
-        public: true,
-        metadata: {
-          cacheControl: 'public, max-age=31536000',
+    // Анализ видео с помощью Google Cloud Video Intelligence API
+    const gcsUri = `gs://${process.env.GCS_BUCKET_NAME}/${path.basename(videoPath)}`;
+    const [operation] = await videoIntelligenceClient.annotateVideo({
+      inputUri: gcsUri,
+      features: ['LABEL_DETECTION', 'EXPLICIT_CONTENT_DETECTION', 'TEXT_DETECTION', 'SPEECH_TRANSCRIPTION'],
+      videoContext: {
+        speechTranscriptionConfig: {
+          languageCode: 'en-US', // Вы можете изменить это на нужный вам язык
         },
-      });
+      },
+    });
 
-      const gcsUri = `gs://${bucketName}/${destination}`;
-      const publicUrl = `https://storage.googleapis.com/${bucketName}/${destination}`;
+    const [response] = await operation.promise();
 
-      // Анализ видео с помощью Google Cloud Video Intelligence API
-      const [operation] = await videoIntelligenceClient.annotateVideo({
-        inputUri: gcsUri,
-        features: ['LABEL_DETECTION', 'EXPLICIT_CONTENT_DETECTION', 'TEXT_DETECTION', 'SPEECH_TRANSCRIPTION'],
-        videoContext: {
-          speechTranscriptionConfig: {
-            languageCode: 'en-US', // Вы можете изменить это на нужный вам язык
-          },
-        },
-      });
+    // Проверка на наличие нежелательного контента
+    const explicitContentAnnotation = response.annotationResults[0]?.explicitAnnotation || { frames: [] };
+    const explicitLikelihood = explicitContentAnnotation.frames.map((frame) => frame.pornographyLikelihood);
 
-      const [response] = await operation.promise();
-
-      // Проверка на наличие нежелательного контента
-      const explicitContentAnnotation = response.annotationResults[0]?.explicitAnnotation || { frames: [] };
-      const explicitLikelihood = explicitContentAnnotation.frames.map((frame) => frame.pornographyLikelihood);
-
-      if (explicitLikelihood.some((likelihood) => likelihood >= 3)) {
-        console.log('Видео содержит нежелательный контент');
-        return res.status(400).json({ error: 'Video contains explicit content' });
-      }
-
-      // Извлечение текста из видео
-      const textAnnotations = response.annotationResults[0]?.textAnnotations || [];
-      const extractedTexts = textAnnotations.map((text) => text.text);
-
-      // Транскрибирование аудио в текст
-      const speechTranscriptions = response.annotationResults[0]?.speechTranscriptions || [];
-      const transcribedText = speechTranscriptions.map(transcription =>
-        transcription.alternatives.map(alternative => alternative.transcript).join('\n')
-      ).join('\n\n');
-
-      // Сохранение информации о видео в базе данных
-      const video = await Video.create({
-        title,
-        videoPath: publicUrl,
-        length,
-        approved: false,
-        extractedTexts,
-        transcribedText,
-        thumbnailPath: thumbnailFilename,
-      });
-
-      res.status(201).json({ message: 'Video uploaded and analyzed successfully', video });
-    } catch (uploadError) {
-      console.error('Ошибка при загрузке видео в GCS:', uploadError);
-      res.status(500).json({ error: 'Failed to upload video to GCS' });
+    if (explicitLikelihood.some((likelihood) => likelihood >= 3)) {
+      console.log('Видео содержит нежелательный контент');
+      return res.status(400).json({ error: 'Video contains explicit content' });
     }
+
+    // Извлечение текста из видео
+    const textAnnotations = response.annotationResults[0]?.textAnnotations || [];
+    const extractedTexts = textAnnotations.map((text) => text.text);
+
+    // Транскрибирование аудио в текст
+    const speechTranscriptions = response.annotationResults[0]?.speechTranscriptions || [];
+    const transcribedText = speechTranscriptions.map(transcription =>
+      transcription.alternatives.map(alternative => alternative.transcript).join('\n')
+    ).join('\n\n');
+
+    // Сохранение информации о видео в базе данных
+    const video = await Video.create({
+      title,
+      videoPath: videoPublicUrl,
+      length,
+      approved: false,
+      extractedTexts,
+      transcribedText,
+      thumbnailPath: thumbnailPublicUrl, // Сохраняем публичный URL скриншота
+    });
+
+    res.status(201).json({ message: 'Video uploaded and analyzed successfully', video });
   } catch (error) {
     console.error('Общая ошибка при загрузке видео:', error);
     res.status(500).json({ error: 'Failed to upload video' });

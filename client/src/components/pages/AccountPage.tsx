@@ -15,10 +15,16 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
+  SimpleGrid,
+  AspectRatio,
+  IconButton,  // Импортируем IconButton
 } from '@chakra-ui/react';
+import { FaTrash } from 'react-icons/fa';  // Импортируем иконку для кнопки удаления
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
-import { useGetLikedVideosQuery } from '../../redux/like/likeSlice'; // Импортируем из нового слайса
+import { useGetLikedVideosQuery, useUnlikeVideoMutation } from '../../redux/like/likeSlice'; // Импортируем мутацию удаления лайка
+import VideoPlayer from '../ui/VideoPlayer'; // Импортируем видеоплеер
 import type { RootState } from '../../redux/store';
+import type { VideoType } from '../../types/types'; // Обязательно убедитесь, что у вас есть тип VideoType
 
 export default function AccountPage(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -32,11 +38,20 @@ export default function AccountPage(): JSX.Element {
     state.auth.user.status === 'logged' ? state.auth.user.id : null
   );
 
+  // Используем RTK Query для получения данных о понравившихся видео
   const {
-    data: likedVideos,
+    data: likedVideosData,
     error,
     isLoading: isLoadingLikedVideos,
   } = useGetLikedVideosQuery({ userId: userId ?? 0 }, { skip: !userId });
+
+  const likedVideos: VideoType[] = likedVideosData || []; // Проверяем, что likedVideosData существует и извлекаем поле data, если оно есть
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0); // Изначально 0, т.е. первый элемент
+
+  // Мутация для удаления лайка
+  const [unlikeVideo] = useUnlikeVideoMutation();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -48,7 +63,7 @@ export default function AccountPage(): JSX.Element {
     setVideoTitle(event.target.value);
   };
 
-  // Function to check for undesirable content
+  // Функция для проверки нежелательного контента
   const isUndesirableContent = (title: string) => {
     const undesirableKeywords = ['bad', 'offensive', 'undesirable'];
     return undesirableKeywords.some((keyword) =>
@@ -99,21 +114,41 @@ export default function AccountPage(): JSX.Element {
     }
   };
 
-  // Video Carousel State
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // Открытие модального окна для видео
+  const handleVideoSelect = (index: number) => {
+    setCurrentVideoIndex(index);
+    setIsModalOpen(true);
+  };
 
-  // Handlers for carousel navigation
-  const handleNext = () => {
-    if (likedVideos) {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % likedVideos.length);
+  // Закрытие модального окна
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setCurrentVideoIndex(0); // Возвращаем индекс на начало при закрытии
+  };
+
+  const handleNextVideo = () => {
+    if (likedVideos && likedVideos.length > 0) {
+      setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % likedVideos.length);
     }
   };
 
-  const handlePrev = () => {
-    if (likedVideos) {
-      setCurrentIndex(
-        (prevIndex) => (prevIndex - 1 + likedVideos.length) % likedVideos.length
-      );
+  const handlePrevVideo = () => {
+    if (likedVideos && likedVideos.length > 0) {
+      setCurrentVideoIndex((prevIndex) => (prevIndex - 1 + likedVideos.length) % likedVideos.length);
+    }
+  };
+
+  // Функция для удаления видео из избранного
+  const handleUnlike = async (videoId: number) => {
+    if (!userId) {
+      console.error('Пользователь не авторизован');
+      return;
+    }
+    try {
+      await unlikeVideo({ userId, videoId }).unwrap();
+      console.log('Видео удалено из избранного!');
+    } catch (err) {
+      console.error('Ошибка при удалении видео из избранного:', err);
     }
   };
 
@@ -126,7 +161,7 @@ export default function AccountPage(): JSX.Element {
         </Button>
       </Box>
 
-      {/* Modal for undesirable content */}
+      {/* Modal для предупреждений */}
       <Modal isOpen={showAlert && alertStatus === 'warning'} onClose={() => setShowAlert(false)}>
         <ModalOverlay />
         <ModalContent>
@@ -185,79 +220,83 @@ export default function AccountPage(): JSX.Element {
       </Box>
 
       {/* Основное содержимое страницы */}
-      <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
-        <Flex direction="column" align="center" justify="center" flex="1">
-          <Box width="full">
-            <Text fontSize="2xl" mb={4}>
-              Видео, которые вам понравились
-            </Text>
-            {isLoadingLikedVideos ? (
-              <Spinner size="xl" />
-            ) : error ? (
-              <Text>Ошибка при загрузке данных.</Text>
-            ) : (
-              <Flex align="center" justify="center" position="relative">
-                {likedVideos && likedVideos.length > 0 && (
-                  <>
-                    <Button
-                      onClick={handlePrev}
-                      position="absolute"
-                      left="10px"
-                      top="50%"
-                      transform="translateY(-50%)"
-                      zIndex={1}
-                      bg="transparent"
-                      _hover={{ bg: 'rgba(0, 0, 0, 0.1)' }}
-                    >
-                      <Box
-                        width="0"
-                        height="0"
-                        borderLeft="10px solid transparent"
-                        borderRight="10px solid transparent"
-                        borderBottom="20px solid black"
-                        transform="rotate(270deg)"
-                      />
-                    </Button>
-
-                    <Box key={likedVideos[currentIndex].id} p={4}>
-                      <Flex direction="column" align="center">
-                        <Image
-                          src={likedVideos[currentIndex].thumbnailPath}
-                          alt={likedVideos[currentIndex].title}
-                          mb={2}
-                          boxSize="400px"
-                          objectFit="cover"
-                        />
-                        <Text noOfLines={2}>{likedVideos[currentIndex].title}</Text>
-                      </Flex>
-                    </Box>
-
-                    <Button
-                      onClick={handleNext}
-                      position="absolute"
-                      right="10px"
-                      top="50%"
-                      transform="translateY(-50%)"
-                      zIndex={1}
-                      bg="transparent"
-                      _hover={{ bg: 'rgba(0, 0, 0, 0.1)' }}
-                    >
-                      <Box
-                        width="0"
-                        height="0"
-                        borderLeft="10px solid transparent"
-                        borderRight="10px solid transparent"
-                        borderBottom="20px solid black"
-                        transform="rotate(90deg)"
-                      />
-                    </Button>
-                  </>
-                )}
-              </Flex>
-            )}
-          </Box>
-        </Flex>  
+      <Flex direction="column" align="center" justify="center">
+        <Text fontSize="2xl" mb={4}>
+          Видео, которые вам понравились
+        </Text>
+        {isLoadingLikedVideos ? (
+          <Spinner size="xl" />
+        ) : error ? (
+          <Text>Ошибка при загрузке данных.</Text>
+        ) : (
+          <SimpleGrid columns={[1, 2, 3]} spacing={8} w="full" maxW="1200px">
+            {likedVideos?.map((video: VideoType, index: number) => ( // Добавляем типизацию
+              <Box
+                key={video.id}
+                p={4}
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                position="relative" // Добавляем позиционирование
+                onClick={() => handleVideoSelect(index)} // Выбор видео для просмотра
+                cursor="pointer"
+                _hover={{ bg: "gray.100" }} // Эффект наведения
+              >
+                <AspectRatio ratio={16 / 9}>
+                  <Image
+                    src={video.thumbnailPath} // Убедитесь, что у вас есть запасной путь
+                    alt={video.title}
+                    boxSize="full"
+                    objectFit="cover"
+                  />
+                </AspectRatio>
+                <Text noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
+                  {video.title}
+                </Text>
+                {/* Кнопка удаления лайка */}
+                <IconButton
+                  aria-label="Удалить из избранного"
+                  icon={<FaTrash />}
+                  colorScheme="red"
+                  size="sm"
+                  position="absolute"
+                  top="4"
+                  right="4"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Останавливаем всплытие события
+                    handleUnlike(video.id);
+                  }}
+                />
+              </Box>
+            ))}
+          </SimpleGrid>
+        )}
       </Flex>
+
+      {/* Модальное окно для просмотра видео */}
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="6xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Просмотр видео</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {likedVideos && likedVideos.length > 0 && (
+              <Box maxW="100%" w="100%">
+                <VideoPlayer
+                  src={likedVideos[currentVideoIndex].videoPath}
+                  poster={likedVideos[currentVideoIndex].thumbnailPath}
+                  onEnd={handleNextVideo}
+                  onLike={() => console.log('Лайкнули видео!')}
+                  videos={likedVideos}
+                  currentVideoIndex={currentVideoIndex}
+                  handleNextVideo={handleNextVideo}
+                  handlePrevVideo={handlePrevVideo}
+                />
+              </Box>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Container>
   );
 }
