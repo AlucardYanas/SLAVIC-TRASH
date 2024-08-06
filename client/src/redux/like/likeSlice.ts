@@ -19,16 +19,15 @@ export const likeApi = createApi({
         method: 'POST',
         body: { userId, videoId },
       }),
-      invalidatesTags: [{ type: 'LikedVideos', id: 'LIST' }],
+      invalidatesTags: ['LikedVideos'], // Invalidates all tags of type 'LikedVideos'
     }),
     unlikeVideo: builder.mutation<void, LikeType>({
-      // Добавляем мутацию для удаления лайка
       query: ({ userId, videoId }) => ({
         url: `/likedVideos`,
         method: 'DELETE',
         body: { userId, videoId },
       }),
-      invalidatesTags: ['LikedVideos'],
+      invalidatesTags: ['LikedVideos'], // Invalidates all tags of type 'LikedVideos'
     }),
   }),
 });

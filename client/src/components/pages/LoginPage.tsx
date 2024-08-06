@@ -15,50 +15,54 @@ import useAuth from '../hooks/useAuth';
 export default function LoginPage(): JSX.Element {
   const { signInHandler } = useAuth();
   return (
-    <Flex justify="center">
-      <Box
-        as="form"
-        onSubmit={signInHandler}
-        bg={useColorModeValue('', 'gray.900')}
-        w="lg"
-        p={8}
-        borderRadius="md"
-      >
-        <Text
-          fontSize="2xl"
-          fontWeight="bold"
-          align="center"
-          mb={4}
-          color={useColorModeValue('gray.900', 'gray.100')}
-        >
-          Sign In
-        </Text>
-        <VStack spacing={4}>
-          <FormControl isRequired>
-            <FormLabel color={useColorModeValue('gray.900', 'gray.100')}>Email</FormLabel>
-            <Input
-              type="email"
-              placeholder="Email"
-              name="email"
-              bg={useColorModeValue('gray.100', 'gray.900')}
-            />
-          </FormControl>
+    <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
+      <Flex direction="column" align="center" justify="center" flex="1">
+        
+          <Box
+            as="form"
+            onSubmit={signInHandler}
+            bg={useColorModeValue('', 'gray.900')}
+            w="lg"
+            p={8}
+            borderRadius="md"
+          >
+            <Text
+              fontSize="2xl"
+              fontWeight="bold"
+              align="center"
+              mb={4}
+              color={useColorModeValue('gray.900', 'gray.100')}
+            >
+              Sign In
+            </Text>
+            <VStack spacing={4}>
+              <FormControl isRequired>
+                <FormLabel color={useColorModeValue('gray.900', 'gray.100')}>Email</FormLabel>
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  name="email"
+                  bg={useColorModeValue('gray.100', 'gray.900')}
+                />
+              </FormControl>
 
-          <FormControl isRequired>
-            <FormLabel color={useColorModeValue('gray.900', 'gray.100')}>Password</FormLabel>
-            <Input
-              type="password"
-              name="password"
-              placeholder="Password"
-              bg={useColorModeValue('gray.100', 'gray.900')}
-            />
-          </FormControl>
+              <FormControl isRequired>
+                <FormLabel color={useColorModeValue('gray.900', 'gray.100')}>Password</FormLabel>
+                <Input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  bg={useColorModeValue('gray.100', 'gray.900')}
+                />
+              </FormControl>
 
-          <Button type="submit" colorScheme="blue" w="full" mt={4}>
-            sign in
-          </Button>
-        </VStack>
-      </Box>
+              <Button type="submit" colorScheme="blue" w="full" mt={4}>
+                sign in
+              </Button>
+            </VStack>
+          </Box>
+        </Flex>
+      
     </Flex>
   );
 }
