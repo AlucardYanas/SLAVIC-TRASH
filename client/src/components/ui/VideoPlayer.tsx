@@ -17,17 +17,18 @@ import {
   FaExpand,
   FaStepBackward,
   FaStepForward,
+  FaShare,
 } from 'react-icons/fa';
 
-interface VideoPlayerProps {
+type VideoPlayerProps = {
   src: string;
   poster?: string;
   onEnd?: () => void;
   onLike?: () => void;
-  videos?: { videoPath: string }[]; // Дополнил пропсами для видео-списка
-  currentVideoIndex: number; // Индекс текущего видео
-  handleNextVideo: () => void; // Функция для перехода к следующему видео
-  handlePrevVideo: () => void; // Функция для перехода к предыдущему видео
+  videos?: { videoPath: string }[];
+  currentVideoIndex: number;
+  handleNextVideo: () => void;
+  handlePrevVideo: () => void;
 }
 
 export default function VideoPlayer({
@@ -45,6 +46,8 @@ export default function VideoPlayer({
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
   const [showControls, setShowControls] = useState(false);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const volumeSliderTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -101,16 +104,26 @@ export default function VideoPlayer({
       if (videoRef.current.requestFullscreen) {
         videoRef.current.requestFullscreen();
       } else if (videoRef.current.mozRequestFullScreen) {
-        /* Firefox */
         videoRef.current.mozRequestFullScreen();
       } else if (videoRef.current.webkitRequestFullscreen) {
-        /* Chrome, Safari & Opera */
         videoRef.current.webkitRequestFullscreen();
       } else if (videoRef.current.msRequestFullscreen) {
-        /* IE/Edge */
         videoRef.current.msRequestFullscreen();
       }
     }
+  };
+
+  const handleMouseEnterVolume = () => {
+    if (volumeSliderTimeoutRef.current) {
+      clearTimeout(volumeSliderTimeoutRef.current);
+    }
+    setShowVolumeSlider(true);
+  };
+
+  const handleMouseLeaveVolume = () => {
+    volumeSliderTimeoutRef.current = setTimeout(() => {
+      setShowVolumeSlider(false);
+    }, 1000);
   };
 
   return (
@@ -132,58 +145,66 @@ export default function VideoPlayer({
         height="100%"
         onTimeUpdate={updateProgress}
         onEnded={handleEnded}
+        onClick={togglePlayPause}
+        zIndex={1}
       />
       {showControls && (
         <>
           <Flex
             position="absolute"
             top="50%"
-            left="4"
-            right="4"
+            left="0"
+            right="0"
             alignItems="center"
             justifyContent="space-between"
             transform="translateY(-50%)"
+            zIndex={2}
           >
             <IconButton
+              variant="solid"
               aria-label="Rewind"
               icon={<FaStepBackward />}
               onClick={handlePrevVideo}
-              colorScheme="green"
+              colorScheme="whiteAlpha"
               size="sm"
             />
             {!isPlaying && (
               <IconButton
+                variant="solid"
                 aria-label="Play"
                 icon={<FaPlay />}
                 onClick={togglePlayPause}
-                colorScheme="green"
+                colorScheme="whiteAlpha"
                 size="lg"
               />
             )}
             <IconButton
+              variant="solid"
               aria-label="Forward"
               icon={<FaStepForward />}
               onClick={handleNextVideo}
-              colorScheme="green"
+              colorScheme="whiteAlpha"
               size="sm"
             />
           </Flex>
           <Flex
             position="absolute"
-            bottom="4"
-            left="4"
-            right="4"
+            bottom="0"
+            left="0"
+            right="0"
             alignItems="center"
             justifyContent="space-between"
             bg="rgba(0, 0, 0, 0.5)"
             p="2"
             borderRadius="md"
+            zIndex={2}
           >
             <IconButton
+              variant="solid"
               aria-label={isPlaying ? 'Pause' : 'Play'}
               icon={isPlaying ? <FaPause /> : <FaPlay />}
               onClick={togglePlayPause}
-              colorScheme="green"
+              colorScheme="whiteAlpha"
               size="sm"
             />
             <Slider
@@ -192,46 +213,76 @@ export default function VideoPlayer({
               onChange={handleProgressChange}
               flex="1"
               mx="4"
-              colorScheme="green"
+              colorScheme="whiteAlpha"
             >
               <SliderTrack>
                 <SliderFilledTrack />
               </SliderTrack>
               <SliderThumb />
             </Slider>
-            <IconButton
-              aria-label="Volume"
-              icon={volume > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
-              onClick={() => handleVolumeChange(volume > 0 ? 0 : 100)}
-              colorScheme="green"
-              size="sm"
-            />
-            <Slider
-              aria-label="volume"
-              value={volume * 100}
-              onChange={handleVolumeChange}
-              maxW="100px"
-              ml="4"
-              colorScheme="green"
-              size="sm"
+            <Box
+              position="relative"
+              onMouseEnter={handleMouseEnterVolume}
+              onMouseLeave={handleMouseLeaveVolume}
             >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
+              <IconButton
+                mr={2}
+                variant="solid"
+                colorScheme="whiteAlpha"
+                aria-label="Volume"
+                icon={volume > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
+                onClick={() => handleVolumeChange(volume > 0 ? 0 : 100)}
+                size="sm"
+              />
+              {showVolumeSlider && (
+                <Box
+                  position="absolute"
+                  bottom="100%"
+                  left="50%"
+                  transform="translateX(-50%)"
+                  zIndex={3}
+                >
+                  <Slider
+                    mr={2}
+                    orientation="vertical"
+                    aria-label="volume"
+                    value={volume * 100}
+                    onChange={handleVolumeChange}
+                    minH="80px"
+                    colorScheme="whiteAlpha"
+                    size="sm"
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb />
+                  </Slider>
+                </Box>
+              )}
+            </Box>
             <IconButton
+              mr={2}
+              variant="solid"
               aria-label="Like"
               icon={<FaThumbsUp />}
               onClick={onLike}
-              colorScheme="green"
+              colorScheme="whiteAlpha"
               size="sm"
             />
             <IconButton
+              mr={2}
+              variant="solid"
+              aria-label="Like"
+              icon={<FaShare />}
+              colorScheme="whiteAlpha"
+              size="sm"
+            />
+            <IconButton
+              variant="solid"
               aria-label="Fullscreen"
               icon={<FaExpand />}
               onClick={toggleFullScreen}
-              colorScheme="green"
+              colorScheme="whiteAlpha"
               size="sm"
             />
           </Flex>
