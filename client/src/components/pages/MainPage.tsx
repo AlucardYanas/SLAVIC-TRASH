@@ -83,12 +83,10 @@ export default function MainPage(): JSX.Element {
   }
 
   return (
-    <Container maxW="container.xl" p={4}>
-      <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
-        <Flex direction="column" align="center" justify="center" flex="1">
-          {content}
-        </Flex>
+    <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
+      <Flex direction="column" align="center" justify="center" flex="1">
+        {content}
       </Flex>
-    </Container>
+    </Flex>
   );
 }
