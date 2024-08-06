@@ -53,7 +53,8 @@ export type UserStateType =
   | { status: 'fetching' }
   | { status: 'guest' }
   | { status: 'loading' }
-  | ({ status: 'logged' } & UserType);
+  | ({ status: 'logged' } & UserType)
+  | ({ status: 'admin' } & UserType);
 
 // Тип для данных загрузки видео
 export type VideoUploadType = {
