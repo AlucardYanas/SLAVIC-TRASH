@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: client
+      dockerfile: Dockerfile.prod
+    image: "127.0.0.1:5000/gitops/slavtrash_client:latest"
+    networks:
+      - backbone
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.rule=Host(`slavic-trash.chickenkiller.com`)"
+      - "traefik.http.routers.client.entrypoints=websecure"
+      - "traefik.http.routers.client.tls.certresolver=myresolver"
+      - "traefik.http.services.client.loadbalancer.server.port=8080"
+
+  server:
+    build:
+      context: server
+    image: "127.0.0.1:5000/gitops/slavtrash_server:latest"
+    env_file:
+      - "./server/.env"
+    volumes:
+      - server_uploads:/opt/app/public/uploads
+    networks:
+      - public # dirty quick fix
+      - backbone
+
+  db:
+    image: postgres:16
+    env_file:
+      - "./server/.env"
+    restart: unless-stopped
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    networks:
+      - backbone
+
+  traefik:
+    image: "traefik:latest"
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=kuznetsovsemyondesu@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    networks:
+      - public
+      - backbone
+
+volumes:
+  server_uploads: {}
+  db_volume: {}
+  letsencrypt: {}
+
+networks:
+  public: {}
+  backbone:
+    internal: true
