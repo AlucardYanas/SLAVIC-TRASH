@@ -6,7 +6,6 @@ module.exports = (sequelize, DataTypes) => {
   class Video extends Model {
     static associate(models) {
       Video.hasMany(models.Like, { foreignKey: 'videoId' });
-      Video.hasMany(models.History, { foreignKey: 'videoId' });
       Video.hasMany(models.WatchedVideo, { foreignKey: 'videoId' });
     }
   }
