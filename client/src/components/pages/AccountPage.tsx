@@ -234,7 +234,7 @@ export default function AccountPage(): JSX.Element {
 
           colorScheme="gray"
           background="#DD6B20"
-          onClick={() => handleSubmit}
+          onClick={handleSubmit}
 
           isLoading={isLoading}
           mt={2}
