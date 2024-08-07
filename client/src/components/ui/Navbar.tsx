@@ -64,7 +64,7 @@ export default function NavBar(): JSX.Element {
                 </>
               )}
               {(user.status === 'logged' || user.status === 'admin') && (
-                <>
+               
                   <Button
                     colorScheme="orange"
                     onClick={logoutHandler}
@@ -74,7 +74,6 @@ export default function NavBar(): JSX.Element {
                   >
                     Logout
                   </Button>
-                </>
               )}
             </HStack>
           )}
