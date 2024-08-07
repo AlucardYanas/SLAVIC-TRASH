@@ -21,6 +21,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { FaTrash } from 'react-icons/fa';
+import type { AxiosError } from 'axios';
 
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
 import { useGetLikedVideosQuery, useUnlikeVideoMutation } from '../../redux/like/likeSlice';
@@ -64,10 +65,8 @@ export default function AccountPage(): JSX.Element {
     setVideoTitle(event.target.value);
   };
 
-
   // Функция для проверки нежелательного контента
   const isUndesirableContent = (title: string): boolean => {
-
     const undesirableKeywords = ['bad', 'offensive', 'undesirable'];
     return undesirableKeywords.some((keyword) => title.toLowerCase().includes(keyword));
   };
@@ -107,8 +106,8 @@ export default function AccountPage(): JSX.Element {
         duration: 5000,
         isClosable: true,
       });
-    } catch (error: any) {
-      console.error('Ошибка загрузки:', error);
+    } catch (err: unknown) {
+      console.error('Ошибка загрузки:', err);
 
       toast({
         title: 'Произошла лажа',
@@ -118,8 +117,7 @@ export default function AccountPage(): JSX.Element {
         isClosable: true,
       });
 
-      if (error.status === 400) {
-
+      if ((err as AxiosError).status === 400) {
         setAlertMessage('Видео содержит нежелательный контент и не может быть загружено.');
         setAlertStatus('warning');
       } else {
@@ -130,19 +128,17 @@ export default function AccountPage(): JSX.Element {
       setShowAlert(true);
     }
   };
-
-
+  const handleSubmitClick = (): void => {
+    void handleSubmit();
+  };
   // Открытие модального окна для видео
   const handleVideoSelect = (index: number): void => {
-
     setCurrentVideoIndex(index);
     setIsModalOpen(true);
   };
 
-
   // Закрытие модального окна
   const handleCloseModal = (): void => {
-
     setIsModalOpen(false);
     setCurrentVideoIndex(0);
   };
@@ -161,10 +157,8 @@ export default function AccountPage(): JSX.Element {
     }
   };
 
-
   // Функция для удаления видео из избранного
   const handleUnlike = async (videoId: number): Promise<void> => {
-
     if (!userId) {
       console.error('Пользователь не авторизован');
       return;
@@ -231,11 +225,9 @@ export default function AccountPage(): JSX.Element {
         <Button
           size="lg"
           variant="solid"
-
           colorScheme="gray"
           background="#DD6B20"
-          onClick={handleSubmit}
-
+          onClick={handleSubmitClick}
           isLoading={isLoading}
           mt={2}
         >
@@ -253,10 +245,10 @@ export default function AccountPage(): JSX.Element {
           opacity="1"
           color="white"
           textAlign="center"
-         as='b'
-          weight='800'
-          size='48px'
-          lineHeight='48px'
+          as="b"
+          fontWeight="800"
+          size="48px"
+          lineHeight="48px"
         >
           Лайкосы
         </Text>
@@ -297,9 +289,7 @@ export default function AccountPage(): JSX.Element {
                   right="4"
                   onClick={(e) => {
                     e.stopPropagation();
-
                     void handleUnlike(video.id);
-
                   }}
                 />
               </Box>
@@ -321,8 +311,6 @@ export default function AccountPage(): JSX.Element {
                   poster={likedVideos[currentVideoIndex].thumbnailPath}
                   onEnd={handleNextVideo}
                   onLike={() => console.log('Лайкнули видео!')}
-                  videos={likedVideos}
-                  currentVideoIndex={currentVideoIndex}
                   handleNextVideo={handleNextVideo}
                   handlePrevVideo={handlePrevVideo}
                 />

@@ -15,7 +15,7 @@ export type VideoType = z.infer<typeof VideoSchema> & {
 };
 
 // Интерфейс ответа сервера при загрузке видео
-export interface UploadVideoResponse {
+export type UploadVideoResponse = {
   message: string;
   video: VideoType; // Используем тип VideoType для вложенного объекта видео
 }

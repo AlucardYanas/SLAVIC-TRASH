@@ -1,28 +1,30 @@
 import React, { useState } from 'react';
-import { Box, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb, IconButton } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  IconButton,
+} from '@chakra-ui/react';
 import { FaExpand } from 'react-icons/fa';
 
-interface AdminVideoPlayerProps {
+type AdminVideoPlayerProps = {
   src: string;
   poster?: string;
-}
+};
 
 export default function AdminVideoPlayer({ src, poster }: AdminVideoPlayerProps): JSX.Element {
   const [progress, setProgress] = useState(0);
 
-  const handleProgressChange = (value: number) => {
-    setProgress(isNaN(value) ? 0 : value); // Проверка на NaN
+  const handleProgressChange = (value: number): void => {
+    setProgress(Number.isNaN(value) ? 0 : value); // Проверка на NaN
   };
 
   return (
     <Box position="relative" w="600px" h="400px" mx="auto" bg="black">
-      <Box
-        as="video"
-        src={src}
-        poster={poster}
-        width="100%"
-        height="100%"
-      />
+      <Box as="video" src={src} poster={poster} width="100%" height="100%" />
       <Flex
         position="absolute"
         bottom="4"
@@ -47,12 +49,7 @@ export default function AdminVideoPlayer({ src, poster }: AdminVideoPlayerProps)
           </SliderTrack>
           <SliderThumb />
         </Slider>
-        <IconButton
-          aria-label="Fullscreen"
-          icon={<FaExpand />}
-          colorScheme="green"
-          size="sm"
-        />
+        <IconButton aria-label="Fullscreen" icon={<FaExpand />} colorScheme="green" size="sm" />
       </Flex>
     </Box>
   );
