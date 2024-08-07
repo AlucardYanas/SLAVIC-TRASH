@@ -287,61 +287,63 @@ export default function AccountPage(): JSX.Element {
         {!isLoadingLikedVideos && error && <Text>Ошибка при загрузке данных.</Text>}
         {!isLoadingLikedVideos && !error && (
           <Flex align="center" justify="center" position="relative" w="full" maxW="1200px">
-            <IconButton
-              icon={<FaChevronLeft />}
-              aria-label="Previous Video"
-              onClick={handlePrevVideo}
-              position="absolute"
-              left="-50px"
-              zIndex="1"
-              variant="ghost"
-              colorScheme="whiteAlpha"
-              isDisabled={currentVideoIndex === 0}
-            />
-            <HStack spacing={4} overflow="hidden" w="full" justifyContent="center">
-              {likedVideos.slice(currentVideoIndex, currentVideoIndex + 3).map((video, index) => (
-                <Box key={video.id} position="relative" w="380px">
-                  <AspectRatio ratio={16 / 9}>
-                    <Image
-                      src={video.thumbnailPath}
-                      alt={video.title}
-                      boxSize="full"
-                      objectFit="cover"
-                      onClick={() => handleVideoSelect(currentVideoIndex + index)}
-                      cursor="pointer"
-                    />
-                  </AspectRatio>
-                  <Text noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
-                    {video.title}
-                  </Text>
-                  <IconButton
-                    aria-label="Удалить из избранного"
-                    icon={<FaTrash />}
-                    colorScheme="red"
-                    size="sm"
-                    position="absolute"
-                    top="4"
-                    right="4"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void handleUnlike(video.id);
-                    }}
+          <IconButton
+            icon={<FaChevronLeft />}
+            aria-label="Previous Video"
+            onClick={handlePrevVideo}
+            position="absolute"
+            left="-60px"
+            zIndex="1"
+            variant="solid"
+            colorScheme="orange"
+            size="xl"
+            _hover={{ opacity: 0.7 }}
+          />
+          <HStack spacing={4} overflow="hidden" w="full" justifyContent="center">
+            {likedVideos.slice(currentVideoIndex, currentVideoIndex + 3).map((video, index) => (
+              <Box key={video.id} position="relative" w="380px">
+                <AspectRatio ratio={16 / 9}>
+                  <Image
+                    src={video.thumbnailPath}
+                    alt={video.title}
+                    boxSize="full"
+                    objectFit="cover"
+                    onClick={() => handleVideoSelect(currentVideoIndex + index)}
+                    cursor="pointer"
                   />
-                </Box>
-              ))}
-            </HStack>
-            <IconButton
-              icon={<FaChevronRight />}
-              aria-label="Next Video"
-              onClick={handleNextVideo}
-              position="absolute"
-              right="-50px"
-              zIndex="1"
-              variant="ghost"
-              colorScheme="whiteAlpha"
-              isDisabled={currentVideoIndex + 3 >= likedVideos.length}
-            />
-          </Flex>
+                </AspectRatio>
+                <Text noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
+                  {video.title}
+                </Text>
+                <IconButton
+                  aria-label="Удалить из избранного"
+                  icon={<FaTrash />}
+                  colorScheme="red"
+                  size="sm"
+                  position="absolute"
+                  top="4"
+                  right="4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void handleUnlike(video.id);
+                  }}
+                />
+              </Box>
+            ))}
+          </HStack>
+          <IconButton
+            icon={<FaChevronRight />}
+            aria-label="Next Video"
+            onClick={handleNextVideo}
+            position="absolute"
+            right="-60px"
+            zIndex="1"
+            variant="solid"
+            colorScheme="orange"
+            size="xl"
+            _hover={{ opacity: 0.7 }}
+          />
+        </Flex>
         )}
       </Flex>
 
