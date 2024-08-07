@@ -14,12 +14,13 @@ export default function Layout(): JSX.Element {
     margin: 0,
     padding: 0,
     boxSizing: 'border-box',
-    fontFamily: 'Arial, sans-serif',
+    fontFamily: 'Inter',
+    fontSize: '30px',
     backgroundColor: '#000',
-    backgroundImage: 'url("/94f1112fca6461da18e3d44752b18020.png")',
-    backgroundSize: 'contain',
-    backgroundPosition: 'center center',
-    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url("/94f1112fca6461da18e3d44752b18020.png"), url("/фон забоор.jpg")',
+    backgroundSize: 'contain, cover', // 'contain' for the first image, 'cover' for the second
+    backgroundPosition: 'center center, center center', // 'center center' for both images
+    backgroundRepeat: 'no-repeat, no-repeat',
     minHeight: '100vh',
     width: '100vw',
     overflow: 'hidden',

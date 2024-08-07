@@ -76,11 +76,12 @@ export default function MainPage(): JSX.Element {
       </Flex>
     );
   } else if (error) {
-    content = <Text>Ошибка загрузки видео.</Text>;
+    content = <Text color='white'>Ошибка загрузки видео.</Text>;
   } else if (noShortVideos || filteredVideos.length === 0) {
-    content = <Text>Нет доступных видео.</Text>;
+    content = <Text color='white'>Нет доступных видео.</Text>;
   } else {
     content = (
+      <>
       <VideoPlayer
         src={filteredVideos[currentVideoIndex]?.videoPath}
         poster={filteredVideos[currentVideoIndex]?.thumbnailPath}
@@ -89,14 +90,7 @@ export default function MainPage(): JSX.Element {
         handleNextVideo={handleNextVideo}
         handlePrevVideo={handlePrevVideo}
       />
-    );
-  }
-
-  return (
-    <Flex direction="column" align="center" justify="center" height="calc(100vh - 8rem)">
-      <Flex direction="column" align="center" justify="center" flex="1">
-        {content}
-        <Flex
+      <Flex
           as={Checkbox}
           width="100%"
           justifyContent="center"
@@ -111,6 +105,14 @@ export default function MainPage(): JSX.Element {
         >
           Только короткий треш
         </Flex>
+        </>
+    );
+  }
+
+  return (
+    <Flex direction="column" align="center" justify="center" height="calc(100vh - 8rem)">
+      <Flex direction="column" align="center" justify="center" flex="1">
+        {content}
       </Flex>
     </Flex>
   );
