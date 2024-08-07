@@ -15,12 +15,12 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  SimpleGrid,
   AspectRatio,
   IconButton,
   useToast,
+  HStack,
 } from '@chakra-ui/react';
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import type { AxiosError } from 'axios';
 
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
@@ -65,7 +65,6 @@ export default function AccountPage(): JSX.Element {
     setVideoTitle(event.target.value);
   };
 
-  // Функция для проверки нежелательного контента
   const isUndesirableContent = (title: string): boolean => {
     const undesirableKeywords = ['bad', 'offensive', 'undesirable'];
     return undesirableKeywords.some((keyword) => title.toLowerCase().includes(keyword));
@@ -73,6 +72,31 @@ export default function AccountPage(): JSX.Element {
 
   const handleSubmit = async (): Promise<void> => {
     if (!selectedFile || !videoTitle || userId === null) {
+      if (!selectedFile && !videoTitle) {
+        toast({
+          title: 'Ошибка!',
+          description: 'Пожалуйста, выберите файл видео и введите название.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (!selectedFile) {
+        toast({
+          title: 'Ошибка!',
+          description: 'Пожалуйста, выберите файл видео.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (!videoTitle) {
+        toast({
+          title: 'Ошибка!',
+          description: 'Пожалуйста, введите название видео.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
       setAlertMessage(
         'Пожалуйста, выберите файл видео, введите название и убедитесь, что вы авторизованы.',
       );
@@ -128,16 +152,16 @@ export default function AccountPage(): JSX.Element {
       setShowAlert(true);
     }
   };
+
   const handleSubmitClick = (): void => {
     void handleSubmit();
   };
-  // Открытие модального окна для видео
+
   const handleVideoSelect = (index: number): void => {
     setCurrentVideoIndex(index);
     setIsModalOpen(true);
   };
 
-  // Закрытие модального окна
   const handleCloseModal = (): void => {
     setIsModalOpen(false);
     setCurrentVideoIndex(0);
@@ -145,19 +169,26 @@ export default function AccountPage(): JSX.Element {
 
   const handleNextVideo = (): void => {
     if (likedVideos && likedVideos.length > 0) {
-      setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % likedVideos.length);
+      setCurrentVideoIndex((prevIndex) => {
+        if (prevIndex + 3 < likedVideos.length) {
+          return prevIndex + 3;
+        }
+        return prevIndex;
+      });
     }
   };
+  
 
   const handlePrevVideo = (): void => {
     if (likedVideos && likedVideos.length > 0) {
-      setCurrentVideoIndex(
-        (prevIndex) => (prevIndex - 1 + likedVideos.length) % likedVideos.length,
-      );
+      setCurrentVideoIndex((prevIndex) => {
+        if (prevIndex - 3 >= 0) {
+          return prevIndex - 3;
+        } return 0;
+      });
     }
   };
 
-  // Функция для удаления видео из избранного
   const handleUnlike = async (videoId: number): Promise<void> => {
     if (!userId) {
       console.error('Пользователь не авторизован');
@@ -183,7 +214,7 @@ export default function AccountPage(): JSX.Element {
               <Image
                 src="/yee-boy.gif"
                 alt="Funny Shrek GIF"
-                boxSize="60vh" // Размер GIF
+                boxSize="60vh"
                 mb={4}
                 objectFit="cover"
               />
@@ -255,46 +286,62 @@ export default function AccountPage(): JSX.Element {
         {isLoadingLikedVideos && <Spinner size="xl" />}
         {!isLoadingLikedVideos && error && <Text>Ошибка при загрузке данных.</Text>}
         {!isLoadingLikedVideos && !error && (
-          <SimpleGrid columns={[1, 2, 3]} spacing={8} w="full" maxW="1200px">
-            {likedVideos?.map((video: VideoType, index: number) => (
-              <Box
-                key={video.id}
-                p={4}
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="hidden"
-                position="relative"
-                onClick={() => handleVideoSelect(index)}
-                cursor="pointer"
-                _hover={{ bg: 'gray.100' }}
-              >
-                <AspectRatio ratio={16 / 9}>
-                  <Image
-                    src={video.thumbnailPath}
-                    alt={video.title}
-                    boxSize="full"
-                    objectFit="cover"
+          <Flex align="center" justify="center" position="relative" w="full" maxW="1200px">
+            <IconButton
+              icon={<FaChevronLeft />}
+              aria-label="Previous Video"
+              onClick={handlePrevVideo}
+              position="absolute"
+              left="-50px"
+              zIndex="1"
+              variant="ghost"
+              colorScheme="whiteAlpha"
+              isDisabled={currentVideoIndex === 0}
+            />
+            <HStack spacing={4} overflow="hidden" w="full" justifyContent="center">
+              {likedVideos.slice(currentVideoIndex, currentVideoIndex + 3).map((video, index) => (
+                <Box key={video.id} position="relative" w="380px">
+                  <AspectRatio ratio={16 / 9}>
+                    <Image
+                      src={video.thumbnailPath}
+                      alt={video.title}
+                      boxSize="full"
+                      objectFit="cover"
+                      onClick={() => handleVideoSelect(currentVideoIndex + index)}
+                      cursor="pointer"
+                    />
+                  </AspectRatio>
+                  <Text noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
+                    {video.title}
+                  </Text>
+                  <IconButton
+                    aria-label="Удалить из избранного"
+                    icon={<FaTrash />}
+                    colorScheme="red"
+                    size="sm"
+                    position="absolute"
+                    top="4"
+                    right="4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void handleUnlike(video.id);
+                    }}
                   />
-                </AspectRatio>
-                <Text noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
-                  {video.title}
-                </Text>
-                <IconButton
-                  aria-label="Удалить из избранного"
-                  icon={<FaTrash />}
-                  colorScheme="red"
-                  size="sm"
-                  position="absolute"
-                  top="4"
-                  right="4"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void handleUnlike(video.id);
-                  }}
-                />
-              </Box>
-            ))}
-          </SimpleGrid>
+                </Box>
+              ))}
+            </HStack>
+            <IconButton
+              icon={<FaChevronRight />}
+              aria-label="Next Video"
+              onClick={handleNextVideo}
+              position="absolute"
+              right="-50px"
+              zIndex="1"
+              variant="ghost"
+              colorScheme="whiteAlpha"
+              isDisabled={currentVideoIndex + 3 >= likedVideos.length}
+            />
+          </Flex>
         )}
       </Flex>
 
