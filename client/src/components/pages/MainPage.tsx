@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flex, Text, Spinner, Checkbox } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { useGetVideosQuery } from '../../redux/apiSlice';
@@ -11,18 +11,27 @@ export default function MainPage(): JSX.Element {
   const { data, error, isLoading } = useGetVideosQuery();
   const [likeVideo] = useLikeVideoMutation();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [showShortTrash, setShowShortTrash] = useState(false); // Новое состояние для фильтрации коротких видео
+  const [showShortTrash, setShowShortTrash] = useState(false);
 
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user.status === 'logged' ? user.id : null;
 
-  // Фильтрация видео по длине до 10 секунд, если включена опция "только короткий треш"
-  const videos: VideoType[] = showShortTrash
+  const filteredVideos: VideoType[] = showShortTrash
     ? data?.data.filter((video) => video.length <= 10) || []
     : data?.data || [];
 
+  useEffect(() => {
+    setCurrentVideoIndex(0); // Сброс текущего индекса видео на 0 при изменении фильтра
+  }, [showShortTrash]);
+
+  useEffect(() => {
+    if (currentVideoIndex >= filteredVideos.length) {
+      setCurrentVideoIndex(0);
+    }
+  }, [filteredVideos.length]);
+
   const handleVideoEnd = (): void => {
-    if (currentVideoIndex < videos.length - 1) {
+    if (currentVideoIndex < filteredVideos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
     }
   };
@@ -33,7 +42,7 @@ export default function MainPage(): JSX.Element {
       return;
     }
 
-    const videoId = videos[currentVideoIndex].id;
+    const videoId = filteredVideos[currentVideoIndex]?.id;
 
     likeVideo({ userId, videoId })
       .unwrap()
@@ -44,7 +53,7 @@ export default function MainPage(): JSX.Element {
   };
 
   const handleNextVideo = (): void => {
-    if (currentVideoIndex < videos.length - 1) {
+    if (currentVideoIndex < filteredVideos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
     }
   };
@@ -66,13 +75,13 @@ export default function MainPage(): JSX.Element {
     );
   } else if (error) {
     content = <Text>Ошибка загрузки видео.</Text>;
-  } else if (videos.length === 0) {
+  } else if (filteredVideos.length === 0) {
     content = <Text>Нет доступных видео.</Text>;
   } else {
     content = (
       <VideoPlayer
-        src={videos[currentVideoIndex].videoPath}
-        poster={videos[currentVideoIndex].thumbnailPath}
+        src={filteredVideos[currentVideoIndex]?.videoPath}
+        poster={filteredVideos[currentVideoIndex]?.thumbnailPath}
         onEnd={handleVideoEnd}
         onLike={handleLike}
         handleNextVideo={handleNextVideo}
@@ -96,7 +105,7 @@ export default function MainPage(): JSX.Element {
           borderRadius="md"
           isChecked={showShortTrash}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setShowShortTrash(e.target.checked)}
-          colorScheme="whiteAlpha"
+          colorScheme="blackAlpha"
         >
           Только короткий треш
         </Flex>
