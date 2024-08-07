@@ -184,9 +184,7 @@ export default function AccountPage(): JSX.Element {
       setCurrentVideoIndex((prevIndex) => {
         if (prevIndex - 3 >= 0) {
           return prevIndex - 3;
-        } else {
-          return 0;
-        }
+        } return 0;
       });
     }
   };
