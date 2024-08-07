@@ -25,19 +25,15 @@ type VideoPlayerProps = {
   poster?: string;
   onEnd?: () => void;
   onLike?: () => void;
-  videos?: { videoPath: string }[];
-  currentVideoIndex: number;
   handleNextVideo: () => void;
   handlePrevVideo: () => void;
-}
+};
 
 export default function VideoPlayer({
   src,
   poster,
   onEnd,
   onLike,
-  videos = [],
-  currentVideoIndex,
   handleNextVideo,
   handlePrevVideo,
 }: VideoPlayerProps): JSX.Element {
@@ -58,10 +54,10 @@ export default function VideoPlayer({
     }
   }, [src]);
 
-  const togglePlayPause = () => {
+  const togglePlayPause = (): void => {
     if (videoRef.current) {
       if (videoRef.current.paused) {
-        videoRef.current.play();
+        void videoRef.current.play();
         setIsPlaying(true);
       } else {
         videoRef.current.pause();
@@ -70,28 +66,28 @@ export default function VideoPlayer({
     }
   };
 
-  const handleVolumeChange = (value: number) => {
+  const handleVolumeChange = (value: number): void => {
     if (videoRef.current) {
       videoRef.current.volume = value / 100;
       setVolume(value / 100);
     }
   };
 
-  const handleProgressChange = (value: number) => {
+  const handleProgressChange = (value: number): void => {
     if (videoRef.current) {
       videoRef.current.currentTime = (videoRef.current.duration * value) / 100;
       setProgress(value);
     }
   };
 
-  const updateProgress = () => {
+  const updateProgress = (): void => {
     if (videoRef.current) {
       const prog = (videoRef.current.currentTime / videoRef.current.duration) * 100;
       setProgress(Number.isNaN(prog) ? 0 : prog);
     }
   };
 
-  const handleEnded = () => {
+  const handleEnded = (): void => {
     if (onEnd) {
       onEnd();
     }
@@ -99,28 +95,22 @@ export default function VideoPlayer({
     setProgress(0);
   };
 
-  const toggleFullScreen = () => {
+  const toggleFullScreen = (): void => {
     if (videoRef.current) {
-      if (videoRef.current.requestFullscreen) {
-        videoRef.current.requestFullscreen();
-      } else if (videoRef.current.mozRequestFullScreen) {
-        videoRef.current.mozRequestFullScreen();
-      } else if (videoRef.current.webkitRequestFullscreen) {
-        videoRef.current.webkitRequestFullscreen();
-      } else if (videoRef.current.msRequestFullscreen) {
-        videoRef.current.msRequestFullscreen();
-      }
+      videoRef.current.requestFullscreen().catch((error) => {
+        console.error(error);
+      });
     }
   };
 
-  const handleMouseEnterVolume = () => {
+  const handleMouseEnterVolume = (): void => {
     if (volumeSliderTimeoutRef.current) {
       clearTimeout(volumeSliderTimeoutRef.current);
     }
     setShowVolumeSlider(true);
   };
 
-  const handleMouseLeaveVolume = () => {
+  const handleMouseLeaveVolume = (): void => {
     volumeSliderTimeoutRef.current = setTimeout(() => {
       setShowVolumeSlider(false);
     }, 1000);

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Container, Flex, Text, Spinner } from '@chakra-ui/react';
+import { Flex, Text, Spinner } from '@chakra-ui/react';
+import { useSelector } from 'react-redux';
 import { useGetVideosQuery } from '../../redux/apiSlice'; // Запрос для получения видео
 import { useLikeVideoMutation } from '../../redux/like/likeSlice'; // Запрос для лайков
 import VideoPlayer from '../ui/VideoPlayer';
 import type { VideoType } from '../../types/types';
-import { useSelector } from 'react-redux';
 import type { RootState } from '../../redux/store';
 
 export default function MainPage(): JSX.Element {
@@ -25,21 +25,21 @@ export default function MainPage(): JSX.Element {
     }
   };
 
-  const handleLike = async (): Promise<void> => {
-    try {
-      if (!userId) {
-        console.error('Пользователь не авторизован');
-        return;
-      }
-
-      const videoId = videos[currentVideoIndex].id;
-
-      // Оптимистичное обновление
-      await likeVideo({ userId, videoId }).unwrap();
-      console.log('Видео лайкнуто!');
-    } catch (err) {
-      console.error('Ошибка при лайке видео:', err);
+  const handleLike = (): void => {
+    if (!userId) {
+      console.error('Пользователь не авторизован');
+      return;
     }
+
+    const videoId = videos[currentVideoIndex].id;
+
+    // Оптимистичное обновление
+    likeVideo({ userId, videoId })
+      .unwrap()
+      .catch((err) => {
+        console.error('Ошибка при лайке видео:', err);
+      });
+    console.log('Видео лайкнуто!');
   };
 
   const handleNextVideo = (): void => {
@@ -74,8 +74,6 @@ export default function MainPage(): JSX.Element {
         poster={videos[currentVideoIndex].thumbnailPath} // Используем thumbnailPath для изображения
         onEnd={handleVideoEnd}
         onLike={handleLike}
-        videos={videos} // Передаем список видео
-        currentVideoIndex={currentVideoIndex}
         handleNextVideo={handleNextVideo}
         handlePrevVideo={handlePrevVideo}
       />
