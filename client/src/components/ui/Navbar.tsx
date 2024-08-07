@@ -24,7 +24,7 @@ export default function NavBar(): JSX.Element {
 
   return (
     <Box boxShadow="dark-lg">
-      <Flex height="114px" alignItems="center" justifyContent="space-between" p={4}>
+      <Flex height="114px" alignItems="center" justifyContent="space-between" p={9}>
         <Box as={NavLink} to="/">
           <img src="/Logo.png" alt="Logo" />
         </Box>
