@@ -24,6 +24,7 @@ services:
     volumes:
       - server_uploads:/opt/app/public/uploads
     networks:
+      - public # dirty quick fix
       - backbone
 
   db:
