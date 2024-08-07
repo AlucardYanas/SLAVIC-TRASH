@@ -1,4 +1,4 @@
-import { Box, Container, Flex } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -17,8 +17,8 @@ export default function Layout(): JSX.Element {
     fontFamily: 'Arial, sans-serif',
     backgroundColor: '#000',
     backgroundImage: 'url("/94f1112fca6461da18e3d44752b18020.png")',
-    backgroundSize: '80% auto',
-    backgroundPosition: 'center',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     minHeight: '100vh',
     width: '100vw',
@@ -30,7 +30,6 @@ export default function Layout(): JSX.Element {
   return (
     <Provider store={store}>
       <Box style={layoutStyles}>
-        <Container maxW="container.xl">
         <Loader isLoading={status === 'fetching'}>
           <Flex direction="column" minH="100vh">
             <Navbar />
@@ -38,9 +37,7 @@ export default function Layout(): JSX.Element {
               <Outlet />
             </Box>
           </Flex>
-        </Loader>  
-        </Container>
-        
+        </Loader>
       </Box>
     </Provider>
   );
