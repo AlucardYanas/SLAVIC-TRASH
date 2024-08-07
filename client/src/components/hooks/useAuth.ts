@@ -12,14 +12,16 @@ export default function useAuth(): {
 
   const signInHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget)) as UserSignInType;
+    const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown;
+    const data = formData as UserSignInType;
     if (!data.email || !data.password) return;
     void dispatch(signInThunk(data));
   };
 
   const signUpHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget)) as UserSignUpType;
+    const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown;
+    const data = formData as UserSignUpType;
     if (!data.email || !data.password || !data.username) return;
     void dispatch(signUpThunk(data));
   };

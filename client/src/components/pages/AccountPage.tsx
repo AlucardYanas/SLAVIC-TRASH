@@ -21,6 +21,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { FaTrash } from 'react-icons/fa';
+
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
 import { useGetLikedVideosQuery, useUnlikeVideoMutation } from '../../redux/like/likeSlice';
 import VideoPlayer from '../ui/VideoPlayer';
@@ -53,22 +54,25 @@ export default function AccountPage(): JSX.Element {
 
   const [unlikeVideo] = useUnlikeVideoMutation();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
     }
   };
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setVideoTitle(event.target.value);
   };
 
-  const isUndesirableContent = (title: string) => {
+
+  // Функция для проверки нежелательного контента
+  const isUndesirableContent = (title: string): boolean => {
+
     const undesirableKeywords = ['bad', 'offensive', 'undesirable'];
     return undesirableKeywords.some((keyword) => title.toLowerCase().includes(keyword));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     if (!selectedFile || !videoTitle || userId === null) {
       setAlertMessage(
         'Пожалуйста, выберите файл видео, введите название и убедитесь, что вы авторизованы.',
@@ -95,6 +99,7 @@ export default function AccountPage(): JSX.Element {
       setAlertStatus('success');
       setSelectedFile(null);
       setVideoTitle('');
+
       toast({
         title: 'Успех!',
         description: 'Мы его посмотрим и добавим, если всё ок.',
@@ -114,6 +119,7 @@ export default function AccountPage(): JSX.Element {
       });
 
       if (error.status === 400) {
+
         setAlertMessage('Видео содержит нежелательный контент и не может быть загружено.');
         setAlertStatus('warning');
       } else {
@@ -125,23 +131,29 @@ export default function AccountPage(): JSX.Element {
     }
   };
 
-  const handleVideoSelect = (index: number) => {
+
+  // Открытие модального окна для видео
+  const handleVideoSelect = (index: number): void => {
+
     setCurrentVideoIndex(index);
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = () => {
+
+  // Закрытие модального окна
+  const handleCloseModal = (): void => {
+
     setIsModalOpen(false);
     setCurrentVideoIndex(0);
   };
 
-  const handleNextVideo = () => {
+  const handleNextVideo = (): void => {
     if (likedVideos && likedVideos.length > 0) {
       setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % likedVideos.length);
     }
   };
 
-  const handlePrevVideo = () => {
+  const handlePrevVideo = (): void => {
     if (likedVideos && likedVideos.length > 0) {
       setCurrentVideoIndex(
         (prevIndex) => (prevIndex - 1 + likedVideos.length) % likedVideos.length,
@@ -149,7 +161,10 @@ export default function AccountPage(): JSX.Element {
     }
   };
 
-  const handleUnlike = async (videoId: number) => {
+
+  // Функция для удаления видео из избранного
+  const handleUnlike = async (videoId: number): Promise<void> => {
+
     if (!userId) {
       console.error('Пользователь не авторизован');
       return;
@@ -174,7 +189,7 @@ export default function AccountPage(): JSX.Element {
               <Image
                 src="/yee-boy.gif"
                 alt="Funny Shrek GIF"
-                boxSize="60vh"
+                boxSize="60vh" // Размер GIF
                 mb={4}
                 objectFit="cover"
               />
@@ -216,9 +231,11 @@ export default function AccountPage(): JSX.Element {
         <Button
           size="lg"
           variant="solid"
+
           colorScheme="gray"
           background="#DD6B20"
-          onClick={handleSubmit}
+          onClick={() => handleSubmit}
+
           isLoading={isLoading}
           mt={2}
         >
@@ -243,11 +260,9 @@ export default function AccountPage(): JSX.Element {
         >
           Лайкосы
         </Text>
-        {isLoadingLikedVideos ? (
-          <Spinner size="xl" />
-        ) : error ? (
-          <Text>Ошибка при загрузке данных.</Text>
-        ) : (
+        {isLoadingLikedVideos && <Spinner size="xl" />}
+        {!isLoadingLikedVideos && error && <Text>Ошибка при загрузке данных.</Text>}
+        {!isLoadingLikedVideos && !error && (
           <SimpleGrid columns={[1, 2, 3]} spacing={8} w="full" maxW="1200px">
             {likedVideos?.map((video: VideoType, index: number) => (
               <Box
@@ -282,7 +297,9 @@ export default function AccountPage(): JSX.Element {
                   right="4"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleUnlike(video.id);
+
+                    void handleUnlike(video.id);
+
                   }}
                 />
               </Box>
