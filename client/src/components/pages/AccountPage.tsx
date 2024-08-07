@@ -17,14 +17,16 @@ import {
   ModalCloseButton,
   SimpleGrid,
   AspectRatio,
-  IconButton, // Импортируем IconButton
+  IconButton,
+  useToast,
 } from '@chakra-ui/react';
-import { FaTrash } from 'react-icons/fa'; // Импортируем иконку для кнопки удаления
+import { FaTrash } from 'react-icons/fa';
+
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
-import { useGetLikedVideosQuery, useUnlikeVideoMutation } from '../../redux/like/likeSlice'; // Импортируем мутацию удаления лайка
-import VideoPlayer from '../ui/VideoPlayer'; // Импортируем видеоплеер
+import { useGetLikedVideosQuery, useUnlikeVideoMutation } from '../../redux/like/likeSlice';
+import VideoPlayer from '../ui/VideoPlayer';
 import type { RootState } from '../../redux/store';
-import type { VideoType } from '../../types/types'; // Обязательно убедитесь, что у вас есть тип VideoType
+import type { VideoType } from '../../types/types';
 
 export default function AccountPage(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -33,24 +35,23 @@ export default function AccountPage(): JSX.Element {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertStatus, setAlertStatus] = useState<'success' | 'error' | 'warning' | 'info'>('info');
   const [uploadVideo, { isLoading }] = useUploadVideoMutation();
+  const toast = useToast();
 
   const userId = useSelector((state: RootState) =>
     state.auth.user.status === 'logged' ? state.auth.user.id : null,
   );
 
-  // Используем RTK Query для получения данных о понравившихся видео
   const {
     data: likedVideosData,
     error,
     isLoading: isLoadingLikedVideos,
   } = useGetLikedVideosQuery({ userId: userId ?? 0 }, { skip: !userId });
 
-  const likedVideos: VideoType[] = likedVideosData || []; // Проверяем, что likedVideosData существует и извлекаем поле data, если оно есть
+  const likedVideos: VideoType[] = likedVideosData || [];
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0); // Изначально 0, т.е. первый элемент
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
 
-  // Мутация для удаления лайка
   const [unlikeVideo] = useUnlikeVideoMutation();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -63,25 +64,25 @@ export default function AccountPage(): JSX.Element {
     setVideoTitle(event.target.value);
   };
 
+
   // Функция для проверки нежелательного контента
   const isUndesirableContent = (title: string): boolean => {
+
     const undesirableKeywords = ['bad', 'offensive', 'undesirable'];
     return undesirableKeywords.some((keyword) => title.toLowerCase().includes(keyword));
   };
 
   const handleSubmit = async (): Promise<void> => {
     if (!selectedFile || !videoTitle || userId === null) {
-      // Если нет файла, заголовка или пользователь не авторизован
       setAlertMessage(
         'Пожалуйста, выберите файл видео, введите название и убедитесь, что вы авторизованы.',
       );
       setAlertStatus('info');
       setShowAlert(true);
-      return; // Выход из функции, если условия не выполнены
+      return;
     }
 
     if (isUndesirableContent(videoTitle)) {
-      // Устанавливаем сообщение и статус предупреждения
       setAlertMessage('Видео содержит нежелательный контент и не может быть загружено.');
       setAlertStatus('warning');
       setShowAlert(true);
@@ -98,11 +99,27 @@ export default function AccountPage(): JSX.Element {
       setAlertStatus('success');
       setSelectedFile(null);
       setVideoTitle('');
-    } catch (err: any) {
-      console.error('Ошибка загрузки:', err);
 
-      if (err.status === 400) {
-        // Если сервер вернул 400, это значит, что видео содержит нежелательный контент
+      toast({
+        title: 'Успех!',
+        description: 'Мы его посмотрим и добавим, если всё ок.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error: any) {
+      console.error('Ошибка загрузки:', error);
+
+      toast({
+        title: 'Произошла лажа',
+        description: 'Не могу грузануть(',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      if (error.status === 400) {
+
         setAlertMessage('Видео содержит нежелательный контент и не может быть загружено.');
         setAlertStatus('warning');
       } else {
@@ -110,20 +127,24 @@ export default function AccountPage(): JSX.Element {
         setAlertStatus('error');
       }
     } finally {
-      setShowAlert(true); // Всегда показываем уведомление после попытки загрузки
+      setShowAlert(true);
     }
   };
 
+
   // Открытие модального окна для видео
   const handleVideoSelect = (index: number): void => {
+
     setCurrentVideoIndex(index);
     setIsModalOpen(true);
   };
 
+
   // Закрытие модального окна
   const handleCloseModal = (): void => {
+
     setIsModalOpen(false);
-    setCurrentVideoIndex(0); // Возвращаем индекс на начало при закрытии
+    setCurrentVideoIndex(0);
   };
 
   const handleNextVideo = (): void => {
@@ -140,8 +161,10 @@ export default function AccountPage(): JSX.Element {
     }
   };
 
+
   // Функция для удаления видео из избранного
   const handleUnlike = async (videoId: number): Promise<void> => {
+
     if (!userId) {
       console.error('Пользователь не авторизован');
       return;
@@ -156,14 +179,6 @@ export default function AccountPage(): JSX.Element {
 
   return (
     <Container maxW="container.xl" p={4} position="relative">
-      {/* Верхняя панель с кнопками */}
-      <Box mb={4}>
-        <Button colorScheme="teal" variant="solid" mr={4}>
-          История просмотров
-        </Button>
-      </Box>
-
-      {/* Modal для предупреждений */}
       <Modal isOpen={showAlert && alertStatus === 'warning'} onClose={() => setShowAlert(false)}>
         <ModalOverlay />
         <ModalContent>
@@ -172,7 +187,7 @@ export default function AccountPage(): JSX.Element {
           <ModalBody>
             <Flex direction="column" align="center" justify="center">
               <Image
-                src="/yee-boy.gif" // GIF Shrek с мечом, расположенный в папке public
+                src="/yee-boy.gif"
                 alt="Funny Shrek GIF"
                 boxSize="60vh" // Размер GIF
                 mb={4}
@@ -186,7 +201,6 @@ export default function AccountPage(): JSX.Element {
         </ModalContent>
       </Modal>
 
-      {/* Скрытое поле для выбора файлов */}
       <input
         id="fileInput"
         type="file"
@@ -195,36 +209,56 @@ export default function AccountPage(): JSX.Element {
         onChange={handleFileChange}
       />
 
-      {/* Поле ввода названия видео и кнопка для отправки */}
-      <Box mb={4}>
+      <Flex direction="column" alignItems="center" mb={4}>
         <Input
           placeholder="Введите название видео"
           value={videoTitle}
           onChange={handleTitleChange}
           mb={2}
+          width="600px"
+          bg="orange.200"
+          _placeholder={{ color: 'orange.600' }}
         />
         <Button
-          colorScheme="teal"
+          size="lg"
           variant="solid"
+          colorScheme="gray"
+          background="#DD6B20"
           onClick={() => document.getElementById('fileInput')?.click()}
         >
-          Выбрать файл
+          {selectedFile ? 'Видео выбрано' : 'Выбрать видео'}
         </Button>
-        <br />
         <Button
-          colorScheme="teal"
+          size="lg"
           variant="solid"
-          onClick={() => handleSubmit}
-          isLoading={isLoading}
-        >
-          Отправить
-        </Button>
-      </Box>
 
-      {/* Основное содержимое страницы */}
+          colorScheme="gray"
+          background="#DD6B20"
+          onClick={() => handleSubmit}
+
+          isLoading={isLoading}
+          mt={2}
+        >
+          Загрузить видео
+        </Button>
+      </Flex>
+
       <Flex direction="column" align="center" justify="center">
-        <Text fontSize="2xl" mb={4}>
-          Видео, которые вам понравились
+        <Text
+          fontSize="4xl"
+          mb={4}
+          width="620px"
+          height="48px"
+          gap="0px"
+          opacity="1"
+          color="white"
+          textAlign="center"
+         as='b'
+          weight='800'
+          size='48px'
+          lineHeight='48px'
+        >
+          Лайкосы
         </Text>
         {isLoadingLikedVideos && <Spinner size="xl" />}
         {!isLoadingLikedVideos && error && <Text>Ошибка при загрузке данных.</Text>}
@@ -263,7 +297,9 @@ export default function AccountPage(): JSX.Element {
                   right="4"
                   onClick={(e) => {
                     e.stopPropagation();
+
                     void handleUnlike(video.id);
+
                   }}
                 />
               </Box>
@@ -272,7 +308,6 @@ export default function AccountPage(): JSX.Element {
         )}
       </Flex>
 
-      {/* Модальное окно для просмотра видео */}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="6xl">
         <ModalOverlay />
         <ModalContent>
