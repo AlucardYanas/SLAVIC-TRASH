@@ -10,9 +10,9 @@ const navLinkStyles: CSSProperties = {
   gap: '0px',
   opacity: '1', // Changed opacity to 1 to make the links visible
   fontFamily: 'Inter',
-  fontSize: '30px',
-  fontWeight: '500',
-  lineHeight: '36px',
+  fontSize: '36px', // Increased font size
+  fontWeight: '700', // Increased font weight
+  lineHeight: '42px',
   textAlign: 'left',
   color: 'orange',
 };
@@ -64,16 +64,15 @@ export default function NavBar(): JSX.Element {
                 </>
               )}
               {(user.status === 'logged' || user.status === 'admin') && (
-               
-                  <Button
-                    colorScheme="orange"
-                    onClick={logoutHandler}
-                    ml={4}
-                    style={{ borderRadius: '6px' }}
-                    _hover={{ opacity: '0.7' }}
-                  >
-                    Logout
-                  </Button>
+                <Button
+                  colorScheme="orange"
+                  onClick={logoutHandler}
+                  ml={4}
+                  style={{ borderRadius: '6px' }}
+                  _hover={{ opacity: '0.7' }}
+                >
+                  Logout
+                </Button>
               )}
             </HStack>
           )}
