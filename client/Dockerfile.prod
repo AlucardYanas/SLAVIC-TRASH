@@ -1,0 +1,11 @@
+FROM node:20
+
+WORKDIR /opt/app
+COPY . .
+RUN npm i \
+    && mv vite.config.docker.ts vite.config.ts
+RUN npm run build
+
+EXPOSE 8080
+
+CMD ["npm", "run", "preview"]
