@@ -13,13 +13,13 @@ import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 export default function SignUpPage(): JSX.Element {
-  const { signUpHandler } = useAuth();
+  const { signUpHandlerClick } = useAuth();
   return (
     <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
       <Flex direction="column" align="center" justify="center" flex="1">
         <Box
           as="form"
-          onSubmit={signUpHandler}
+          onSubmit={signUpHandlerClick}
           bg="gray.900"
           w="335px"
           p={8}

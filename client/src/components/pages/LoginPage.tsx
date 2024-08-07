@@ -13,13 +13,14 @@ import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 export default function LoginPage(): JSX.Element {
-  const { signInHandler } = useAuth();
+  const { signInHandlerClick } = useAuth();
+  
   return (
     <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
       <Flex direction="column" align="center" justify="center" flex="1">
         <Box
           as="form"
-          onSubmit={signInHandler}
+          onSubmit={signInHandlerClick}
           bg="gray.900"
           w="335px"
           h="340px"
@@ -50,7 +51,7 @@ export default function LoginPage(): JSX.Element {
               <Input
                 type="password"
                 name="password"
-                placeholder="Password"
+                placeholder="Пароль"
                 bg="gray.100"
                 borderRadius="md"
               />

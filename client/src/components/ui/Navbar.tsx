@@ -36,12 +36,12 @@ export default function NavBar(): JSX.Element {
             <HStack spacing={8} display={{ base: 'none', md: 'flex' }}>
               {user.status === 'admin' && (
                 <Box _hover={navLinkHoverStyles}>
-                  <NavLink to="/admin" style={navLinkStyles}>Admin Panel</NavLink>
+                  <NavLink to="/admin" style={navLinkStyles}>Админка</NavLink>
                 </Box>
               )}
               {(user.status === 'logged' || user.status === 'admin') && (
                 <Box _hover={navLinkHoverStyles}>
-                  <NavLink to="/account" style={navLinkStyles}>Account</NavLink>
+                  <NavLink to="/account" style={navLinkStyles}>Кабинет</NavLink>
                 </Box>
               )}
             </HStack>
@@ -56,10 +56,10 @@ export default function NavBar(): JSX.Element {
               {user.status === 'guest' && (
                 <>
                   <Box _hover={navLinkHoverStyles}>
-                    <NavLink to="/login" style={navLinkStyles}>Login</NavLink>
+                    <NavLink to="/login" style={navLinkStyles}>Вход</NavLink>
                   </Box>
                   <Box _hover={navLinkHoverStyles}>
-                    <NavLink to="/signup" style={navLinkStyles}>Sign Up</NavLink>
+                    <NavLink to="/signup" style={navLinkStyles}>Регистрация</NavLink>
                   </Box>
                 </>
               )}
@@ -71,7 +71,7 @@ export default function NavBar(): JSX.Element {
                   style={{ borderRadius: '6px' }}
                   _hover={{ opacity: '0.7' }}
                 >
-                  Logout
+                  Выход
                 </Button>
               )}
             </HStack>
