@@ -12,6 +12,7 @@ export default function MainPage(): JSX.Element {
   const [likeVideo] = useLikeVideoMutation();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [showShortTrash, setShowShortTrash] = useState(false);
+  const [noShortVideos, setNoShortVideos] = useState(false);
 
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user.status === 'logged' ? user.id : null;
@@ -21,8 +22,9 @@ export default function MainPage(): JSX.Element {
     : data?.data || [];
 
   useEffect(() => {
-    setCurrentVideoIndex(0); // Сброс текущего индекса видео на 0 при изменении фильтра
-  }, [showShortTrash]);
+    setCurrentVideoIndex(0); // Reset current video index to 0 when the filter changes
+    setNoShortVideos(showShortTrash && filteredVideos.length === 0);
+  }, [showShortTrash, filteredVideos.length]);
 
   useEffect(() => {
     if (currentVideoIndex >= filteredVideos.length) {
@@ -75,7 +77,7 @@ export default function MainPage(): JSX.Element {
     );
   } else if (error) {
     content = <Text>Ошибка загрузки видео.</Text>;
-  } else if (filteredVideos.length === 0) {
+  } else if (noShortVideos || filteredVideos.length === 0) {
     content = <Text>Нет доступных видео.</Text>;
   } else {
     content = (

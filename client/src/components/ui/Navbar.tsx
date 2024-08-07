@@ -1,15 +1,15 @@
-import React from 'react';
-import { Box, Flex, HStack, Button } from '@chakra-ui/react';
+import React, { type CSSProperties } from 'react';
+import { Box, Flex, HStack, Button, Link } from '@chakra-ui/react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import useAuth from '../hooks/useAuth';
 import { useAppSelector } from '../hooks/reduxHooks';
 
-const navLinkStyles = {
+const navLinkStyles: CSSProperties = {
   width: '202px',
   height: '36px',
   gap: '0px',
-  opacity: '1', // Изменил opacity на 1, чтобы ссылки были видны
+  opacity: '1', // Changed opacity to 1 to make the links visible
   fontFamily: 'Inter',
   fontSize: '30px',
   fontWeight: '500',
@@ -19,7 +19,7 @@ const navLinkStyles = {
 };
 
 const navLinkHoverStyles = {
-  opacity: '0.7', // Добавил изменение opacity при наведении
+  opacity: '0.7', // Added opacity change on hover
 };
 
 export default function NavBar(): JSX.Element {
@@ -34,7 +34,8 @@ export default function NavBar(): JSX.Element {
       <Flex height="114px" alignItems="center" justifyContent="space-between" p={9}>
         <Flex flex="1" justifyContent="center">
           <Box as={NavLink} to="/">
-            <img src="/Logo.png" alt="Logo" style={{ width: '450px', height: 'auto' }} /> {/* Увеличил размер в 1.5 раза */}
+            <img src="/Logo.png" alt="Logo" style={{ width: '450px', height: 'auto' }} />{' '}
+            {/* Increased size by 1.5 times */}
           </Box>
         </Flex>
         {!isAuthPage && (
@@ -43,15 +44,23 @@ export default function NavBar(): JSX.Element {
             <HStack spacing={8} display={{ base: 'none', md: 'flex' }}>
               {user.status === 'guest' && (
                 <>
-                  <NavLink to="/login" style={navLinkStyles} _hover={navLinkHoverStyles}>Login</NavLink>
-                  <NavLink to="/signup" style={navLinkStyles} _hover={navLinkHoverStyles}>Sign Up</NavLink>
+                  <Link as={NavLink} to="/login" style={navLinkStyles} _hover={navLinkHoverStyles}>
+                    Login
+                  </Link>
+                  <Link as={NavLink} to="/signup" style={navLinkStyles} _hover={navLinkHoverStyles}>
+                    Sign Up
+                  </Link>
                 </>
               )}
               {(user.status === 'logged' || user.status === 'admin') && (
                 <>
-                  <NavLink to="/account" style={navLinkStyles} _hover={navLinkHoverStyles}>Account</NavLink>
+                  <Link as={NavLink} to="/account" style={navLinkStyles} _hover={navLinkHoverStyles}>
+                    Account
+                  </Link>
                   {user.status === 'admin' && (
-                    <NavLink to="/admin" style={navLinkStyles} _hover={navLinkHoverStyles}>Admin Panel</NavLink>
+                    <Link as={NavLink} to="/admin" style={navLinkStyles} _hover={navLinkHoverStyles}>
+                      Admin Panel
+                    </Link>
                   )}
                   <Button
                     colorScheme="red"

@@ -47,6 +47,14 @@ export default function AdminPage(): JSX.Element {
     }
   };
 
+  const handleApproveClick = (): void => {
+    void handleApprove();
+  };
+
+  const handleDisapproveClick = (): void => {
+    void handleDisapprove();
+  };
+
   const currentVideo = pendingVideos[currentVideoIndex];
 
   return (
@@ -62,10 +70,10 @@ export default function AdminPage(): JSX.Element {
           <>
             <AdminVideoPlayer src={currentVideo.videoPath} />
             <Flex mt={4}>
-              <Button mr={2} colorScheme="green" onClick={handleApprove}>
+              <Button mr={2} colorScheme="green" onClick={handleApproveClick}>
                 Одобрить
               </Button>
-              <Button colorScheme="red" onClick={handleDisapprove}>
+              <Button colorScheme="red" onClick={handleDisapproveClick}>
                 Отклонить
               </Button>
             </Flex>
