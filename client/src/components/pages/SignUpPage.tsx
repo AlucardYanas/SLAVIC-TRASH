@@ -22,7 +22,6 @@ export default function SignUpPage(): JSX.Element {
           onSubmit={signUpHandler}
           bg="gray.900"
           w="335px"
-          h="340px"
           p={8}
           borderRadius="md"
         >
@@ -39,8 +38,18 @@ export default function SignUpPage(): JSX.Element {
           <VStack spacing={4}>
             <FormControl isRequired>
               <Input
-                placeholder="Придумайте логин"
+                placeholder="Имя"
                 name="username"
+                bg="gray.100"
+                borderRadius="md"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <Input
+                type="email"
+                name="email"
+                placeholder="Почта"
                 bg="gray.100"
                 borderRadius="md"
               />
@@ -50,7 +59,7 @@ export default function SignUpPage(): JSX.Element {
               <Input
                 type="password"
                 name="password"
-                placeholder="Придумайте пароль"
+                placeholder="Пароль"
                 bg="gray.100"
                 borderRadius="md"
               />
