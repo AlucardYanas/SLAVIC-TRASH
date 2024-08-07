@@ -17,7 +17,7 @@ export default function Layout(): JSX.Element {
     fontFamily: 'Inter',
     fontSize: '30px',
     backgroundColor: '#000',
-    backgroundImage: 'url("/94f1112fca6461da18e3d44752b18020.png"), url("/фон забоор.jpg")',
+    backgroundImage: 'url("/bg.jpg")',
     backgroundSize: 'contain, cover', // 'contain' for the first image, 'cover' for the second
     backgroundPosition: 'center center, center center', // 'center center' for both images
     backgroundRepeat: 'no-repeat, no-repeat',
