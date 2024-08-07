@@ -22,7 +22,7 @@ services:
     env_file:
       - "./server/.env"
     volumes:
-      - node_modules_server:/opt/app/node_modules
+      - server_uploads:/opt/app/public/uploads
     networks:
       - backbone
 
@@ -60,7 +60,7 @@ services:
       - backbone
 
 volumes:
-  node_modules_server: {}
+  server_uploads: {}
   db_volume: {}
   letsencrypt: {}
 

@@ -25,6 +25,7 @@ services:
     volumes:
       - ./server:/opt/app
       - node_modules_server:/opt/app/node_modules
+      - server_uploads:/opt/app/public/uploads
 
   db:
     image: postgres:16
@@ -38,4 +39,5 @@ services:
 volumes:
   node_modules_client: {}
   node_modules_server: {}
+  server_uploads: {}
   db_volume: {}
