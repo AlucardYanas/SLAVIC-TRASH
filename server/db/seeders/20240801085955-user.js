@@ -12,7 +12,7 @@ module.exports = {
         {
           username: 'Admin User',
           email: 'admin@example.com',
-          password: bcrypt.hashSync('adminpassword', 10),
+          password: bcrypt.hashSync('123', 10),
           isAdmin: true,
           createdAt: new Date(),
           updatedAt: new Date(),
