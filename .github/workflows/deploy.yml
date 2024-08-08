@@ -13,8 +13,12 @@ jobs:
       - uses: actions/checkout@v3
 
   call-build:
-    uses: AlucardYanas/SLAVIC-TRASH/.github/workflows/build.yaml@main
+    uses: AlucardYanas/SLAVIC-TRASH/.github/workflows/build.yaml
+    with:
+      ref: ${{ github.ref }}
 
   call-release:
     needs: call-build
-    uses: AlucardYanas/SLAVIC-TRASH/.github/workflows/release.yaml@main
+    uses: AlucardYanas/SLAVIC-TRASH/.github/workflows/release.yaml
+    with:
+      ref: ${{ github.ref }}
