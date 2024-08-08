@@ -12,8 +12,7 @@ services:
 
   server:
     image: "cr.magos.cc/slavtrash_server:latest"
-    env_file:
-      - "./server/.env"
+    env_file: ".env"
     volumes:
       - server_uploads:/opt/app/public/uploads
     networks:
@@ -22,8 +21,7 @@ services:
 
   db:
     image: postgres:16
-    env_file:
-      - "./server/.env"
+    env_file: ".env"
     restart: unless-stopped
     volumes:
       - db_volume:/var/lib/postgresql/data
