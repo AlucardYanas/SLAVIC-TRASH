@@ -1,4 +1,4 @@
-name: '[CI] Build and push images to private registry'
+name: '[CI] - build and push images to private registry'
 
 on:
   workflow_dispatch:
