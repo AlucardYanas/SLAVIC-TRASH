@@ -7,7 +7,13 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     // Извлечение параметров запроса для фильтрации, сортировки и пагинации
-    const { page = 1, limit = 10, sort = 'createdAt', order = 'DESC', search } = req.query;
+    const {
+      page = 1,
+      limit = 10,
+      sort = 'createdAt',
+      order = 'DESC',
+      search,
+    } = req.query;
 
     console.log('Получен запрос на получение видео:', req.query); // Логируем параметры запроса
 

@@ -37,10 +37,10 @@ router.get('/:userId', async (req, res) => {
 
     const likedVideos = await Like.findAll({
       where: { userId },
-      include: [Video]
+      include: [Video],
     });
 
-    const videos = likedVideos.map(like => like.Video);
+    const videos = likedVideos.map((like) => like.Video);
 
     res.status(200).json(videos);
   } catch (error) {

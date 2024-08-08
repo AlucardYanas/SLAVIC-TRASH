@@ -11,14 +11,14 @@ export type VideoType = z.infer<typeof VideoSchema> & {
   approved: boolean;
   thumbnailPath?: string;
   extractedTexts?: string[]; // Добавим, если используется в вашем проекте
-  transcribedText?: string;  // Добавляем новое свойство транскрибированного текста
+  transcribedText?: string; // Добавляем новое свойство транскрибированного текста
 };
 
 // Интерфейс ответа сервера при загрузке видео
 export type UploadVideoResponse = {
   message: string;
   video: VideoType; // Используем тип VideoType для вложенного объекта видео
-}
+};
 
 // Тип для лайка
 export type LikeType = {

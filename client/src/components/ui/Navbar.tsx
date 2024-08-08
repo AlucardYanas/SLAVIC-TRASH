@@ -61,13 +61,7 @@ export default function NavBar(): JSX.Element {
           </HStack>
           {!isMobile && (
             <Flex justifyContent="center" flex="1">
-              <Box
-                as={NavLink}
-                to="/"
-                position="relative"
-                flexShrink={0}
-                textAlign="center"
-              >
+              <Box as={NavLink} to="/" position="relative" flexShrink={0} textAlign="center">
                 <Box
                   as="img"
                   src="/Logo.png"

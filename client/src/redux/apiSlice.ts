@@ -3,7 +3,7 @@ import type { VideoType } from '../types/types';
 
 export type ApiResponse<T> = {
   data: T;
-}
+};
 
 export const videosApi = createApi({
   reducerPath: 'api',
@@ -17,6 +17,4 @@ export const videosApi = createApi({
   }),
 });
 
-export const {
-  useGetVideosQuery,
-} = videosApi;
+export const { useGetVideosQuery } = videosApi;

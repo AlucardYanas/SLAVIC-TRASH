@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  Input,
-  Text,
-  VStack,
-  Link,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, Input, Text, VStack, Link } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
@@ -25,24 +16,13 @@ export default function SignUpPage(): JSX.Element {
           p={8}
           borderRadius="md"
         >
-          <Text
-            fontSize="2xl"
-            fontWeight="bold"
-            align="center"
-            mb={4}
-            color="gray.100"
-          >
+          <Text fontSize="2xl" fontWeight="bold" align="center" mb={4} color="gray.100">
             Создать аккаунт
           </Text>
 
           <VStack spacing={4}>
             <FormControl isRequired>
-              <Input
-                placeholder="Имя"
-                name="username"
-                bg="gray.100"
-                borderRadius="md"
-              />
+              <Input placeholder="Имя" name="username" bg="gray.100" borderRadius="md" />
             </FormControl>
 
             <FormControl isRequired>
@@ -93,7 +73,7 @@ export default function SignUpPage(): JSX.Element {
               color="white"
             >
               Уже зарегистрированы?{' '}
-              <Link as={NavLink} to="/login" color="orange.500" _hover={{ color: "orange.700" }}>
+              <Link as={NavLink} to="/login" color="orange.500" _hover={{ color: 'orange.700' }}>
                 Войти
               </Link>
             </Text>

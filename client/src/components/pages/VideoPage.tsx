@@ -33,8 +33,8 @@ export default function VideoPage(): JSX.Element {
         poster={currentVideo.thumbnailPath}
         onEnd={() => {}}
         onLike={() => {}}
-        showShare={false}         // Hide the Share button
-        showNextPrev={false}     // Hide the Next and Previous buttons
+        showShare={false} // Hide the Share button
+        showNextPrev={false} // Hide the Next and Previous buttons
       />
     );
   }

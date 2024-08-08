@@ -44,11 +44,12 @@ export default function MainPage(): JSX.Element {
     if (currentVideoIndex >= filteredVideos.length) {
       setCurrentVideoIndex(0);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredVideos.length]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-     void refetch();
+      void refetch();
     }, 3000); // Обновляем данные каждые 30 секунд
 
     return () => clearInterval(interval);
