@@ -35,23 +35,21 @@ jobs:
       - name: Build and tag the client Docker image
         run: |
           docker build ./client --file client/Dockerfile.prod --tag ${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
-          docker tag ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }} ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:latest
+          docker tag ${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }} ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:latest
 
       - name: Build and tag the server Docker image
         run: |
           docker build ./server --file server/Dockerfile --tag ${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
-          docker tag ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }} ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:latest
+          docker tag ${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }} ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:latest
 
       - name: Push images
         run: |
-          docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:latest
-          docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:latest
 
       - name: Remove built images locally
         run: |
-          docker rmi ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+          docker rmi ${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           docker rmi ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:latest
-          docker rmi ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+          docker rmi ${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           docker rmi ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:latest
