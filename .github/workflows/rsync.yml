@@ -22,6 +22,6 @@ jobs:
           remote_user: ${{ secrets.TARGET_USER }}
           remote_key: ${{ secrets.TARGET_PRIVATE_KEY }}
     
-     - name: Deploy production stack
+      - name: Deploy production stack
         run: |
           ssh -i ${{ secrets.TARGET_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "docker stack deploy -c /opt/app/slavic_trash/production.stack.yml slavic_trash"
