@@ -4,10 +4,11 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Provider } from 'react-redux';
 import App from './App';
 import { store } from './redux/store';
-
+import theme from './styles/theme';
+// import './styles/font.ts'; // Импорт шрифтов
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <ChakraProvider>
+  <ChakraProvider theme={theme}>
     <Provider store={store}>
       <App />
     </Provider>
