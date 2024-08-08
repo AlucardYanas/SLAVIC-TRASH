@@ -1,4 +1,4 @@
-name: '[CI] - sync production stack with server'
+name: '[CI] - sync production stack and deploy'
 
 on: workflow_dispatch
 
