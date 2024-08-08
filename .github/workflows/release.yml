@@ -3,7 +3,7 @@ name: '[CI] - sync production stack and deploy'
 on: workflow_dispatch
 
 jobs:
-  push-config:
+  sync-and-release:
     runs-on: ubuntu-latest
     steps:
       - name: Add manager node to .ssh/known_hosts
