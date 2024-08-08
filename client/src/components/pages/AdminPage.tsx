@@ -58,15 +58,15 @@ export default function AdminPage(): JSX.Element {
   const currentVideo = pendingVideos[currentVideoIndex];
 
   return (
-    <Container maxW="container.xl" p={4}>
-      <Flex direction="column" align="center" justify="center" height="100vh">
+    <Flex direction="column" align="center" justify="center" height="calc(100vh - 8rem)">
+      <Flex direction="column" align="center" justify="center" flex="1">
         {alertMessage && (
-          <Alert status="info" mb={4}>
+          <Alert status="warning" mb={4}>
             <AlertIcon />
             {alertMessage}
           </Alert>
         )}
-        {currentVideo ? (
+        {currentVideo && (
           <>
             <AdminVideoPlayer src={currentVideo.videoPath} />
             <Flex mt={4}>
@@ -78,10 +78,8 @@ export default function AdminPage(): JSX.Element {
               </Button>
             </Flex>
           </>
-        ) : (
-          <Text>Нет новых видео для одобрения</Text>
         )}
       </Flex>
-    </Container>
+    </Flex>
   );
 }

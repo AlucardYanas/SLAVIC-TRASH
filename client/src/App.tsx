@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from './components/hooks/reduxHooks';
 import ProtectedRouter from './components/HOCs/ProtectedRouter';
 import AdminPage from './components/pages/AdminPage';
 import ErrorPage from './components/pages/ErrorPage';
+import VideoPage from './components/pages/VideoPage';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -25,6 +26,10 @@ function App(): JSX.Element {
         {
           path: '/',
           element: <MainPage />,
+        },
+        {
+          path: '/video/:id',
+          element: <VideoPage />,
         },
         {
           path: '/account',

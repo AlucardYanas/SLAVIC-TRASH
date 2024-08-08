@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Text, Spinner, Checkbox } from '@chakra-ui/react';
+import { Flex, Text, Spinner, Checkbox, useToast } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { useGetVideosQuery } from '../../redux/apiSlice';
 import { useLikeVideoMutation } from '../../redux/like/likeSlice';
@@ -14,6 +14,7 @@ export default function MainPage(): JSX.Element {
   const [showShortTrash, setShowShortTrash] = useState(false);
   const [noShortVideos, setNoShortVideos] = useState(false);
 
+  const toast = useToast();
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user.status === 'logged' ? user.id : null;
 
@@ -48,9 +49,17 @@ export default function MainPage(): JSX.Element {
 
     likeVideo({ userId, videoId })
       .unwrap()
+
       .catch((err) => {
         console.error('Ошибка при лайке видео:', err);
       });
+    toast({
+      title: 'Лайк поставлен',
+      description: 'Видео добавлено в список любимых',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
     console.log('Видео лайкнуто!');
   };
 
@@ -64,6 +73,19 @@ export default function MainPage(): JSX.Element {
     if (currentVideoIndex > 0) {
       setCurrentVideoIndex(currentVideoIndex - 1);
     }
+  };
+
+  const handleShare = (): void => {
+    void navigator.clipboard.writeText(
+      `https://slavic-trash.chickenkiller.com/video/${data?.data[currentVideoIndex].id}`,
+    );
+    toast({
+      title: 'Готово',
+      description: 'Ссылка на видео успешно скопирована',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
   };
 
   let content;
@@ -108,6 +130,7 @@ export default function MainPage(): JSX.Element {
           onLike={handleLike}
           handleNextVideo={handleNextVideo}
           handlePrevVideo={handlePrevVideo}
+          handleShare={handleShare}
         />
         <Flex
           as={Checkbox}
@@ -132,6 +155,7 @@ export default function MainPage(): JSX.Element {
     <Flex direction="column" align="center" justify="center" height="calc(100vh - 8rem)">
       <Flex direction="column" align="center" justify="center" flex="1">
         {content}
+        {/* {user.status === 'logged' && content} */}
       </Flex>
     </Flex>
   );
