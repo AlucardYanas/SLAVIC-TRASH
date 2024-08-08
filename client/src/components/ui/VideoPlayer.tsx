@@ -1,4 +1,3 @@
-// VideoPlayer.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
@@ -128,8 +127,8 @@ export default function VideoPlayer({
   return (
     <Box
       position="relative"
-      w="600px"
-      h="400px"
+      w={{ base: '350px', sm: '350px', md: '400px', lg: '450px', xl: '500px' }}
+      h={{ base: '200px', sm: '200px', md: '250px', lg: '300px', xl: '350px' }}
       mx="auto"
       bg="black"
       onMouseEnter={() => setShowControls(true)}
