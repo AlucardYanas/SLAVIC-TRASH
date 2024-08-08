@@ -76,21 +76,12 @@ export default function MainPage(): JSX.Element {
       </Flex>
     );
   } else if (error) {
-    content = <Text color='white'>Ошибка загрузки видео.</Text>;
+    content = <Text color="white">Ошибка загрузки видео.</Text>;
   } else if (noShortVideos || filteredVideos.length === 0) {
-    content = <Text color='white'>Нет доступных видео.</Text>;
-  } else {
     content = (
       <>
-      <VideoPlayer
-        src={filteredVideos[currentVideoIndex]?.videoPath}
-        poster={filteredVideos[currentVideoIndex]?.thumbnailPath}
-        onEnd={handleVideoEnd}
-        onLike={handleLike}
-        handleNextVideo={handleNextVideo}
-        handlePrevVideo={handlePrevVideo}
-      />
-      <Flex
+        <Text color="white">Нет доступных видео.</Text>
+        <Flex
           as={Checkbox}
           width="100%"
           justifyContent="center"
@@ -105,7 +96,35 @@ export default function MainPage(): JSX.Element {
         >
           Только короткий треш
         </Flex>
-        </>
+      </>
+    );
+  } else {
+    content = (
+      <>
+        <VideoPlayer
+          src={filteredVideos[currentVideoIndex]?.videoPath}
+          poster={filteredVideos[currentVideoIndex]?.thumbnailPath}
+          onEnd={handleVideoEnd}
+          onLike={handleLike}
+          handleNextVideo={handleNextVideo}
+          handlePrevVideo={handlePrevVideo}
+        />
+        <Flex
+          as={Checkbox}
+          width="100%"
+          justifyContent="center"
+          bg="rgba(255, 255, 255, 0.5)"
+          color="black"
+          p="2"
+          mt="4"
+          borderRadius="md"
+          isChecked={showShortTrash}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setShowShortTrash(e.target.checked)}
+          colorScheme="blackAlpha"
+        >
+          Только короткий треш
+        </Flex>
+      </>
     );
   }
 

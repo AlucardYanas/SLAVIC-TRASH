@@ -214,9 +214,11 @@ export default function VideoPlayer({
               position="relative"
               onMouseEnter={handleMouseEnterVolume}
               onMouseLeave={handleMouseLeaveVolume}
+              display="flex"
+              alignItems="center"
+              mr={2} // Added margin-right to align with other controls
             >
               <IconButton
-                mr={2}
                 variant="solid"
                 colorScheme="whiteAlpha"
                 aria-label="Volume"
@@ -233,7 +235,6 @@ export default function VideoPlayer({
                   zIndex={3}
                 >
                   <Slider
-                    mr={2}
                     orientation="vertical"
                     aria-label="volume"
                     value={volume * 100}
@@ -251,21 +252,21 @@ export default function VideoPlayer({
               )}
             </Box>
             <IconButton
-              mr={2}
               variant="solid"
               aria-label="Like"
               icon={<FaThumbsUp />}
               onClick={onLike}
               colorScheme="whiteAlpha"
               size="sm"
+              mr={2}
             />
             <IconButton
-              mr={2}
               variant="solid"
-              aria-label="Like"
+              aria-label="Share"
               icon={<FaShare />}
               colorScheme="whiteAlpha"
               size="sm"
+              mr={2}
             />
             <IconButton
               variant="solid"
