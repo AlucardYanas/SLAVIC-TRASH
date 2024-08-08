@@ -18,12 +18,12 @@ export default function Layout(): JSX.Element {
     fontSize: '30px',
     backgroundColor: '#000',
     backgroundImage: 'url("/bg.jpg")',
-    backgroundSize: 'contain, cover', // 'contain' for the first image, 'cover' for the second
-    backgroundPosition: 'center center, center center', // 'center center' for both images
-    backgroundRepeat: 'no-repeat, no-repeat',
-    minHeight: '100vh',
-    width: '100vw',
-    overflow: 'hidden',
+    backgroundSize: 'cover', // Изображение растягивается на весь экран
+    backgroundPosition: 'center center', // Центрирование фонового изображения
+    backgroundRepeat: 'no-repeat', // Без повторения изображения
+    minHeight: '100vh', // Минимальная высота контейнера на 100% высоты экрана
+    width: '100vw', // Ширина контейнера на 100% ширины экрана
+    overflow: 'hidden', // Скрыть переполнение
     display: 'flex',
     flexDirection: 'column',
   };
@@ -32,7 +32,7 @@ export default function Layout(): JSX.Element {
     <Provider store={store}>
       <Box style={layoutStyles}>
         <Loader isLoading={status === 'fetching'}>
-          <Flex direction="column" minH="100vh">
+          <Flex direction="column" minH="100vh" width="100vw">
             <Navbar />
             <Box flex="1" overflow="auto">
               <Outlet />
