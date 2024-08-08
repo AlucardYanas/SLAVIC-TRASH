@@ -1,5 +1,5 @@
 import React, { type CSSProperties } from 'react';
-import { Box, Flex, HStack, Button, Container, Spacer } from '@chakra-ui/react';
+import { Box, Flex, HStack,  Container} from '@chakra-ui/react';
 import { NavLink, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { useAppSelector } from '../hooks/reduxHooks';
