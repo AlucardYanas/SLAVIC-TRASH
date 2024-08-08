@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   client:
     build:
       context: client
       dockerfile: Dockerfile.prod
-    image: "127.0.0.1:5000/gitops/slavtrash_client:latest"
+    image: "cr.magos.cc/slavtrash_client:latest"
     networks:
-      - backbone
+      - traefik_backbone
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.rule=Host(`slavic-trash.chickenkiller.com`)"
@@ -18,14 +16,14 @@ services:
   server:
     build:
       context: server
-    image: "127.0.0.1:5000/gitops/slavtrash_server:latest"
+    image: "cr.magos.cc/slavtrash_server:latest"
     env_file:
       - "./server/.env"
     volumes:
       - server_uploads:/opt/app/public/uploads
     networks:
-      - public # dirty quick fix
-      - backbone
+      - traefik_public
+      - traefik_backbone
 
   db:
     image: postgres:16
@@ -35,30 +33,7 @@ services:
     volumes:
       - db_volume:/var/lib/postgresql/data
     networks:
-      - backbone
-
-  traefik:
-    image: "traefik:latest"
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entryPoints.web.address=:80"
-      - "--entryPoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.myresolver.acme.email=kuznetsovsemyondesu@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "letsencrypt:/letsencrypt"
-    networks:
-      - public
-      - backbone
+      - traefik_backbone
 
 volumes:
   server_uploads: {}
@@ -66,6 +41,7 @@ volumes:
   letsencrypt: {}
 
 networks:
-  public: {}
-  backbone:
-    internal: true
+  traefik_public:
+    external: true
+  traefik_backbone:
+    external: true
