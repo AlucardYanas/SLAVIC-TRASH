@@ -1,5 +1,5 @@
 import React, { type CSSProperties } from 'react';
-import { Box, Flex, HStack, Container, Spacer } from '@chakra-ui/react';
+import { Box, Flex, HStack, Container, useBreakpointValue } from '@chakra-ui/react';
 import { NavLink, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { useAppSelector } from '../hooks/reduxHooks';
@@ -26,12 +26,13 @@ export default function NavBar(): JSX.Element {
   const location = useLocation();
 
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   return (
     <Box boxShadow="dark-lg">
       <Container maxW="container.xl">
         <Flex height="114px" alignItems="center" justifyContent="space-between" p={9}>
-          <HStack spacing={8} minWidth="auto" display={{ base: 'none', md: 'flex' }}>
+          <HStack spacing={8} minWidth="auto">
             {!isAuthPage && (
               <>
                 {user.status === 'admin' && (
@@ -58,37 +59,32 @@ export default function NavBar(): JSX.Element {
               </>
             )}
           </HStack>
-          <Spacer />
-          <Flex justifyContent="center" flex="0 1 auto">
-            <Box
-              as={NavLink}
-              to="/"
-              position="relative"
-              flexShrink={0}
-              textAlign="center"
-            >
+          {!isMobile && (
+            <Flex justifyContent="center" flex="1">
               <Box
-                as="img"
-                src="/Logo.png"
-                alt="Logo"
-                width={{ base: '250px', sm: '300px', md: '350px', lg: '400px', xl: '450px' }}
-                height="auto"
-              />
-            </Box>
-          </Flex>
-          <Spacer />
-          <HStack
-            spacing={8}
-            minWidth="auto"
-            display={{ base: 'none', md: 'flex' }}
-            justifyContent="flex-end"
-          >
+                as={NavLink}
+                to="/"
+                position="relative"
+                flexShrink={0}
+                textAlign="center"
+              >
+                <Box
+                  as="img"
+                  src="/Logo.png"
+                  alt="Logo"
+                  width={{ base: '250px', sm: '300px', md: '350px', lg: '400px', xl: '450px' }}
+                  height="auto"
+                />
+              </Box>
+            </Flex>
+          )}
+          <HStack spacing={8} minWidth="auto" justifyContent="flex-end">
             {!isAuthPage && (
               <>
                 {user.status === 'guest' && (
                   <Box _hover={navLinkHoverStyles}>
                     <NavLink to="/signup" style={navLinkStyles}>
-                      Рега
+                      Регистрация
                     </NavLink>
                   </Box>
                 )}
