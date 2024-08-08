@@ -1,8 +1,5 @@
 services:
   client:
-    build:
-      context: client
-      dockerfile: Dockerfile.prod
     image: "cr.magos.cc/slavtrash_client:latest"
     networks:
       - traefik_backbone
@@ -14,8 +11,6 @@ services:
       - "traefik.http.services.client.loadbalancer.server.port=8080"
 
   server:
-    build:
-      context: server
     image: "cr.magos.cc/slavtrash_server:latest"
     env_file:
       - "./server/.env"
