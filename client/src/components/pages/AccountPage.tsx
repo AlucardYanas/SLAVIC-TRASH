@@ -353,15 +353,15 @@ export default function AccountPage(): JSX.Element {
         )}
       </Flex>
 
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="6xl">
-        <ModalOverlay />
-        <ModalContent>
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        <ModalOverlay/>
+        <ModalContent maxW="100%" w="auto">
           <ModalHeader>Просмотр видео</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {likedVideos && likedVideos.length > 0 && (
-              <Box maxW="100%" w="100%">
-                <VideoPlayer
+              <Box  maxW="100%" w="100%">
+                <VideoPlayer 
                   src={likedVideos[currentVideoIndex].videoPath}
                   poster={likedVideos[currentVideoIndex].thumbnailPath}
                   onEnd={handleNextVideo}
