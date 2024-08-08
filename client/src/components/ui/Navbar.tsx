@@ -5,20 +5,19 @@ import useAuth from '../hooks/useAuth';
 import { useAppSelector } from '../hooks/reduxHooks';
 
 const navLinkStyles: CSSProperties = {
-  width: '202px',
-  height: '36px',
+  width: '350px',
+  height: '50px',
   gap: '0px',
-  opacity: '1', // Changed opacity to 1 to make the links visible
-  fontFamily: 'Inter',
-  fontSize: '36px', // Increased font size
-  fontWeight: '700', // Increased font weight
-  lineHeight: '42px',
+  opacity: '1',
+  fontFamily: 'Rubik Marker Hatch', // Используйте шрифт Google
+  fontWeight: '950',
+  lineHeight: '48px',
   textAlign: 'left',
-  color: 'orange',
+  color: '#B22222',
 };
 
 const navLinkHoverStyles: CSSProperties = {
-  opacity: '0.7', // Added opacity change on hover
+  opacity: '0.7',
 };
 
 export default function NavBar(): JSX.Element {
@@ -36,12 +35,16 @@ export default function NavBar(): JSX.Element {
             <HStack spacing={8} display={{ base: 'none', md: 'flex' }}>
               {user.status === 'admin' && (
                 <Box _hover={navLinkHoverStyles}>
-                  <NavLink to="/admin" style={navLinkStyles}>Админка</NavLink>
+                  <NavLink to="/admin" style={navLinkStyles}>
+                    Админка
+                  </NavLink>
                 </Box>
               )}
               {(user.status === 'logged' || user.status === 'admin') && (
                 <Box _hover={navLinkHoverStyles}>
-                  <NavLink to="/account" style={navLinkStyles}>Кабинет</NavLink>
+                  <NavLink to="/account" style={navLinkStyles}>
+                    Кабинет
+                  </NavLink>
                 </Box>
               )}
             </HStack>
@@ -56,10 +59,14 @@ export default function NavBar(): JSX.Element {
               {user.status === 'guest' && (
                 <>
                   <Box _hover={navLinkHoverStyles}>
-                    <NavLink to="/login" style={navLinkStyles}>Вход</NavLink>
+                    <NavLink to="/login" style={navLinkStyles}>
+                      Вход
+                    </NavLink>
                   </Box>
                   <Box _hover={navLinkHoverStyles}>
-                    <NavLink to="/signup" style={navLinkStyles}>Регистрация</NavLink>
+                    <NavLink to="/signup" style={navLinkStyles}>
+                      Регистрация
+                    </NavLink>
                   </Box>
                 </>
               )}
