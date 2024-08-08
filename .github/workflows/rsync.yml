@@ -24,4 +24,7 @@ jobs:
     
       - name: Deploy production stack
         run: |
-          ssh -i ${{ secrets.TARGET_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "docker stack deploy -c /opt/app/slavic_trash/production.stack.yml slavic_trash"
+          echo "${{ secrets.TARGET_PRIVATE_KEY }}" > ~/id_rsa
+          chmod 600 ~/id_rsa
+          ssh -i ~/id_rsa -o StrictHostKeyChecking=no ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "docker stack deploy -c /opt/app/slavic_trash/production.stack.yml slavic_trash"
+          rm ~/id_rsa
