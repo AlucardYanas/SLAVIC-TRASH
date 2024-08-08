@@ -15,8 +15,8 @@ jobs:
       - name: rsync deployments
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avzr production.stack.yml
-          path: .
+          switches: -avzr -delete
+          path: production.stack.yml
           remote_path: ${{ secrets.TARGET_PATH }}
           remote_host: ${{ secrets.TARGET_HOST }}
           remote_user: ${{ secrets.TARGET_USER }}
