@@ -22,7 +22,6 @@ import {
 } from '@chakra-ui/react';
 import { FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
 import { useGetLikedVideosQuery, useUnlikeVideoMutation } from '../../redux/like/likeSlice';
 import VideoPlayer from '../ui/VideoPlayer';
@@ -65,16 +64,22 @@ export default function AccountPage(): JSX.Element {
 
       const uploadPromise = uploadVideo(formData).unwrap();
 
-      const toastPromise = async (promise: Promise<UploadVideoResponse>, options: {
-        loading: { title: string, description: string },
-        success: { title: string, description: string },
-        error: { title: string, description: string }
-      }): Promise<void> => toast.promise(promise, options);
+      const toastPromise = async (
+        promise: Promise<UploadVideoResponse>,
+        options: {
+          loading: { title: string; description: string };
+          success: { title: string; description: string };
+          error: { title: string; description: string };
+        },
+      ): Promise<void> => toast.promise(promise, options);
 
       try {
         await toastPromise(uploadPromise, {
           loading: { title: 'Видос грузится в облако', description: 'Положди чуть-чуть, братан' },
-          success: { title: 'Ништяк!', description: 'Видос Подгружен, Мы его посмотрим и добавим, если всё ок.' },
+          success: {
+            title: 'Ништяк!',
+            description: 'Видос Подгружен, Мы его посмотрим и добавим, если всё ок.',
+          },
           error: { title: 'Произошла лажа', description: 'Не могу грузануть' },
         });
         setSelectedFile(null);
@@ -191,6 +196,7 @@ export default function AccountPage(): JSX.Element {
       <Flex direction="column" alignItems="center" mb={4}>
         <Input
           placeholder="Введите название видео"
+          focusBorderColor='white'
           value={videoTitle}
           onChange={handleTitleChange}
           mb={2}
@@ -200,9 +206,12 @@ export default function AccountPage(): JSX.Element {
         />
         <Button
           size="lg"
+          _placeholder={{ color: 'orange.600' }}
           variant="solid"
-          colorScheme="gray"
-          background="#DD6B20"
+          opacity='0.85'
+         
+          // colorScheme="orange.600"
+          background="#ff3b00"
           onClick={() => document.getElementById('fileInput')?.click()}
         >
           Выбрать видео и загрузить
@@ -217,10 +226,11 @@ export default function AccountPage(): JSX.Element {
           height="48px"
           gap="0px"
           opacity="1"
-          color="white"
+          color="yellow"
+          fontFamily="Rubik Marker Hatch"
+          fontWeight="550"
           textAlign="center"
           as="b"
-          fontWeight="800"
           size="48px"
           lineHeight="48px"
         >
@@ -239,6 +249,7 @@ export default function AccountPage(): JSX.Element {
               zIndex="1"
               variant="solid"
               colorScheme="orange"
+              bgColor="#ff3b00"
               size="xl"
               _hover={{ opacity: 0.7 }}
             />
@@ -255,7 +266,8 @@ export default function AccountPage(): JSX.Element {
                       cursor="pointer"
                     />
                   </AspectRatio>
-                  <Text noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
+                  <Text fontFamily="Rubik Marker Hatch"
+                  color='yellow' noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
                     {video.title}
                   </Text>
                   <IconButton
@@ -283,6 +295,7 @@ export default function AccountPage(): JSX.Element {
               zIndex="1"
               variant="solid"
               colorScheme="orange"
+              bgColor="#ff3b00"
               size="xl"
               _hover={{ opacity: 0.7 }}
             />
