@@ -1,10 +1,10 @@
-name: Build and release Docker images
+name: '[CI] - build, push, release'
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - 'build/**'
+      - 'release/**'
 
 env:
   DOCKER_REGISTRY_URL: cr.magos.cc
@@ -12,7 +12,7 @@ env:
   SERVER_IMAGE_NAME: slavtrash_server
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - uses: docker/login-action@v1
@@ -27,39 +27,55 @@ jobs:
       - name: Get the release version
         id: strip-branch-name
         run: |
-          release_version=$(echo "${{ github.ref }}" | sed 's/refs\/heads\/.*\///')
+          release_version=$(echo "${{ github.ref }}" | sed 's/refs\/heads\/.*\///' | sed 's/[^a-zA-Z0-9._-]/_/g')
           echo "Building release version $release_version"
           echo "RELEASE_VERSION=$release_version" >> $GITHUB_ENV
         shell: bash
 
-      - name: Build the client Docker image
+      - name: Build and tag the client Docker image
         run: |
           docker build ./client --file client/Dockerfile.prod --tag ${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           docker tag ${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }} ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:latest
 
-      - name: Build the server Docker image
+      - name: Build and tag the server Docker image
         run: |
           docker build ./server --file server/Dockerfile --tag ${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           docker tag ${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }} ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:latest
 
-      - name: Push the client Docker image with version number
-        run: docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+      - name: Push images
+        run: |
+          docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:latest
+          docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:latest
 
-      - name: Push the client Docker image with latest tag
-        run: docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:latest
-
-      - name: Push the server Docker image with version number
-        run: docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
-
-      - name: Push the server Docker image with latest tag
-        run: docker push ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:latest
-
-      - name: Remove the client Docker image locally
+      - name: Remove built images locally
         run: |
           docker rmi ${{ env.CLIENT_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           docker rmi ${{ env.DOCKER_REGISTRY_URL }}/${{ env.CLIENT_IMAGE_NAME }}:latest
-
-      - name: Remove the server Docker image locally
-        run: |
           docker rmi ${{ env.SERVER_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           docker rmi ${{ env.DOCKER_REGISTRY_URL }}/${{ env.SERVER_IMAGE_NAME }}:latest
+
+  sync-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add manager node to .ssh/known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo $(ssh-keyscan ${{ secrets.TARGET_HOST }}) > ~/.ssh/known_hosts
+
+      - uses: actions/checkout@v2
+      - name: rsync deployments
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avzr
+          path: production.stack.yml
+          remote_path: ${{ secrets.TARGET_PATH }}
+          remote_host: ${{ secrets.TARGET_HOST }}
+          remote_user: ${{ secrets.TARGET_USER }}
+          remote_key: ${{ secrets.TARGET_PRIVATE_KEY }}
+    
+      - name: Deploy production stack
+        run: |
+          echo "${{ secrets.TARGET_PRIVATE_KEY }}" > ~/id_rsa
+          chmod 600 ~/id_rsa
+          ssh -i ~/id_rsa -o StrictHostKeyChecking=no ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "docker stack deploy -c /opt/app/slavic_trash/production.stack.yml slavic_trash"
+          rm ~/id_rsa

@@ -1,8 +1,5 @@
 services:
   client:
-    build:
-      context: client
-      dockerfile: Dockerfile.prod
     image: "cr.magos.cc/slavtrash_client:latest"
     networks:
       - traefik_backbone
@@ -14,11 +11,8 @@ services:
       - "traefik.http.services.client.loadbalancer.server.port=8080"
 
   server:
-    build:
-      context: server
     image: "cr.magos.cc/slavtrash_server:latest"
-    env_file:
-      - "./server/.env"
+    env_file: ".env"
     volumes:
       - server_uploads:/opt/app/public/uploads
     networks:
@@ -27,9 +21,7 @@ services:
 
   db:
     image: postgres:16
-    env_file:
-      - "./server/.env"
-    restart: unless-stopped
+    env_file: ".env"
     volumes:
       - db_volume:/var/lib/postgresql/data
     networks:
