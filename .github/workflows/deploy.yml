@@ -1,0 +1,31 @@
+name: [CI] - build and release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'release/**'
+
+jobs:
+  trigger-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Build Workflow
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          workflow: build.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs:
+            ref: ${{ github.ref }}
+
+  trigger-release:
+    needs: trigger-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Release Workflow
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          workflow: rsync.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs:
+            ref: ${{ github.ref }}
