@@ -1,4 +1,4 @@
-name: '[CI] - send code to server'
+name: '[CI] - sync production stack with server'
 
 on: workflow_dispatch
 
