@@ -1,5 +1,5 @@
 import React, { useState, useEffect, type CSSProperties } from 'react';
-import { Flex, Text, Spinner, Checkbox, useToast, Box } from '@chakra-ui/react';
+import { Flex, Text, Spinner, Checkbox, useToast } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { useGetVideosQuery } from '../../redux/apiSlice';
 import { useLikeVideoMutation } from '../../redux/like/likeSlice';
@@ -13,19 +13,19 @@ export default function MainPage(): JSX.Element {
     height: '200px',
     gap: '0px',
     opacity: '2',
-    fontFamily: 'Rubik Marker Hatch', // Используйте шрифт Google
+    fontFamily: 'Rubik Marker Hatch',
     fontWeight: '550',
     lineHeight: '48px',
     textAlign: 'left',
     color: '#ffc100',
   };
 
-  const { data, error, isLoading } = useGetVideosQuery();
+  const { data, error, isLoading, refetch } = useGetVideosQuery();
   const [likeVideo] = useLikeVideoMutation();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [showShortTrash, setShowShortTrash] = useState(false);
   const [noShortVideos, setNoShortVideos] = useState(false);
-  const [hasWatchedOneVideo, setHasWatchedOneVideo] = useState(false); // New state for tracking video views
+  const [hasWatchedOneVideo, setHasWatchedOneVideo] = useState(false);
 
   const toast = useToast();
   const user = useSelector((state: RootState) => state.auth.user);
@@ -36,7 +36,7 @@ export default function MainPage(): JSX.Element {
     : data?.data || [];
 
   useEffect(() => {
-    setCurrentVideoIndex(0); // Reset current video index to 0 when the filter changes
+    setCurrentVideoIndex(0);
     setNoShortVideos(showShortTrash && filteredVideos.length === 0);
   }, [showShortTrash, filteredVideos.length]);
 
@@ -46,14 +46,24 @@ export default function MainPage(): JSX.Element {
     }
   }, [filteredVideos.length]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+     void refetch();
+    }, 3000); // Обновляем данные каждые 30 секунд
+
+    return () => clearInterval(interval);
+  }, [refetch]);
+
   const handleVideoEnd = (): void => {
     if (!userId && !hasWatchedOneVideo) {
-      setHasWatchedOneVideo(true); // Set flag to true after the first video
-      return; // Prevent moving to the next video
+      setHasWatchedOneVideo(true);
+      return;
     }
 
     if (currentVideoIndex < filteredVideos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
+    } else {
+      setCurrentVideoIndex(0); // Начать с начала, если достигли конца списка
     }
   };
 
@@ -83,12 +93,16 @@ export default function MainPage(): JSX.Element {
   const handleNextVideo = (): void => {
     if (currentVideoIndex < filteredVideos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
+    } else {
+      setCurrentVideoIndex(0); // Перейти к первому видео, если текущее - последнее
     }
   };
 
   const handlePrevVideo = (): void => {
     if (currentVideoIndex > 0) {
       setCurrentVideoIndex(currentVideoIndex - 1);
+    } else {
+      setCurrentVideoIndex(filteredVideos.length - 1); // Перейти к последнему видео, если текущее - первое
     }
   };
 
