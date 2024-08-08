@@ -44,6 +44,7 @@ export default function MainPage(): JSX.Element {
     if (currentVideoIndex >= filteredVideos.length) {
       setCurrentVideoIndex(0);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredVideos.length]);
 
   useEffect(() => {

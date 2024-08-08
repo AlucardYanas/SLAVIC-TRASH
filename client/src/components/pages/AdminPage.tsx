@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Flex, Text, Alert, AlertIcon } from '@chakra-ui/react';
+import { Button, Flex, Alert, AlertIcon } from '@chakra-ui/react';
 import AdminVideoPlayer from '../ui/AdminVideoPlayer';
 import {
   useGetPendingVideosQuery,
