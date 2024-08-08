@@ -1,6 +1,8 @@
 name: '[CI] - sync production stack and deploy'
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  workflow_call:
 
 jobs:
   sync-and-release:
