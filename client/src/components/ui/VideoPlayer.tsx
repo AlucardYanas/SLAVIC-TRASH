@@ -1,3 +1,4 @@
+// VideoPlayer.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
@@ -25,8 +26,12 @@ type VideoPlayerProps = {
   poster?: string;
   onEnd?: () => void;
   onLike?: () => void;
-  handleNextVideo: () => void;
-  handlePrevVideo: () => void;
+  handleNextVideo?: () => void;
+  handlePrevVideo?: () => void;
+  handleShare?: () => void;
+  showLike?: boolean; // New prop for showing the Like button
+  showShare?: boolean; // Existing prop for showing the Share button
+  showNextPrev?: boolean;
 };
 
 export default function VideoPlayer({
@@ -36,6 +41,10 @@ export default function VideoPlayer({
   onLike,
   handleNextVideo,
   handlePrevVideo,
+  handleShare,
+  showLike = true,
+  showShare = true,
+  showNextPrev = true,
 }: VideoPlayerProps): JSX.Element {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -150,32 +159,36 @@ export default function VideoPlayer({
             transform="translateY(-50%)"
             zIndex={2}
           >
-            <IconButton
-              variant="solid"
-              aria-label="Rewind"
-              icon={<FaStepBackward />}
-              onClick={handlePrevVideo}
-              colorScheme="whiteAlpha"
-              size="sm"
-            />
-            {!isPlaying && (
-              <IconButton
-                variant="solid"
-                aria-label="Play"
-                icon={<FaPlay />}
-                onClick={togglePlayPause}
-                colorScheme="whiteAlpha"
-                size="lg"
-              />
+            {showNextPrev && (
+              <>
+                <IconButton
+                  variant="solid"
+                  aria-label="Rewind"
+                  icon={<FaStepBackward />}
+                  onClick={handlePrevVideo}
+                  colorScheme="whiteAlpha"
+                  size="sm"
+                />
+                {!isPlaying && (
+                  <IconButton
+                    variant="solid"
+                    aria-label="Play"
+                    icon={<FaPlay />}
+                    onClick={togglePlayPause}
+                    colorScheme="whiteAlpha"
+                    size="lg"
+                  />
+                )}
+                <IconButton
+                  variant="solid"
+                  aria-label="Forward"
+                  icon={<FaStepForward />}
+                  onClick={handleNextVideo}
+                  colorScheme="whiteAlpha"
+                  size="sm"
+                />
+              </>
             )}
-            <IconButton
-              variant="solid"
-              aria-label="Forward"
-              icon={<FaStepForward />}
-              onClick={handleNextVideo}
-              colorScheme="whiteAlpha"
-              size="sm"
-            />
           </Flex>
           <Flex
             position="absolute"
@@ -214,9 +227,11 @@ export default function VideoPlayer({
               position="relative"
               onMouseEnter={handleMouseEnterVolume}
               onMouseLeave={handleMouseLeaveVolume}
+              display="flex"
+              alignItems="center"
+              mr={2}
             >
               <IconButton
-                mr={2}
                 variant="solid"
                 colorScheme="whiteAlpha"
                 aria-label="Volume"
@@ -233,7 +248,6 @@ export default function VideoPlayer({
                   zIndex={3}
                 >
                   <Slider
-                    mr={2}
                     orientation="vertical"
                     aria-label="volume"
                     value={volume * 100}
@@ -250,23 +264,28 @@ export default function VideoPlayer({
                 </Box>
               )}
             </Box>
-            <IconButton
-              mr={2}
-              variant="solid"
-              aria-label="Like"
-              icon={<FaThumbsUp />}
-              onClick={onLike}
-              colorScheme="whiteAlpha"
-              size="sm"
-            />
-            <IconButton
-              mr={2}
-              variant="solid"
-              aria-label="Like"
-              icon={<FaShare />}
-              colorScheme="whiteAlpha"
-              size="sm"
-            />
+            {showLike && onLike && (
+              <IconButton
+                variant="solid"
+                aria-label="Like"
+                icon={<FaThumbsUp />}
+                onClick={onLike}
+                colorScheme="whiteAlpha"
+                size="sm"
+                mr={2}
+              />
+            )}
+            {showShare && handleShare && (
+              <IconButton
+                variant="solid"
+                aria-label="Share"
+                icon={<FaShare />}
+                colorScheme="whiteAlpha"
+                size="sm"
+                mr={2}
+                onClick={handleShare}
+              />
+            )}
             <IconButton
               variant="solid"
               aria-label="Fullscreen"

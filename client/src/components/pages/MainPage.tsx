@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Text, Spinner, Checkbox } from '@chakra-ui/react';
+import { Flex, Text, Spinner, Checkbox, useToast } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { useGetVideosQuery } from '../../redux/apiSlice';
 import { useLikeVideoMutation } from '../../redux/like/likeSlice';
@@ -14,6 +14,7 @@ export default function MainPage(): JSX.Element {
   const [showShortTrash, setShowShortTrash] = useState(false);
   const [noShortVideos, setNoShortVideos] = useState(false);
 
+  const toast = useToast();
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user.status === 'logged' ? user.id : null;
 
@@ -48,9 +49,17 @@ export default function MainPage(): JSX.Element {
 
     likeVideo({ userId, videoId })
       .unwrap()
+
       .catch((err) => {
         console.error('Ошибка при лайке видео:', err);
       });
+    toast({
+      title: 'Лайк поставлен',
+      description: 'Видео добавлено в список любимых',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
     console.log('Видео лайкнуто!');
   };
 
@@ -66,6 +75,19 @@ export default function MainPage(): JSX.Element {
     }
   };
 
+  const handleShare = (): void => {
+    void navigator.clipboard.writeText(
+      `https://slavic-trash.chickenkiller.com/video/${data?.data[currentVideoIndex].id}`,
+    );
+    toast({
+      title: 'Готово',
+      description: 'Ссылка на видео успешно скопирована',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
+  };
+
   let content;
 
   if (isLoading) {
@@ -76,21 +98,12 @@ export default function MainPage(): JSX.Element {
       </Flex>
     );
   } else if (error) {
-    content = <Text color='white'>Ошибка загрузки видео.</Text>;
+    content = <Text color="white">Ошибка загрузки видео.</Text>;
   } else if (noShortVideos || filteredVideos.length === 0) {
-    content = <Text color='white'>Нет доступных видео.</Text>;
-  } else {
     content = (
       <>
-      <VideoPlayer
-        src={filteredVideos[currentVideoIndex]?.videoPath}
-        poster={filteredVideos[currentVideoIndex]?.thumbnailPath}
-        onEnd={handleVideoEnd}
-        onLike={handleLike}
-        handleNextVideo={handleNextVideo}
-        handlePrevVideo={handlePrevVideo}
-      />
-      <Flex
+        <Text color="white">Нет доступных видео.</Text>
+        <Flex
           as={Checkbox}
           width="100%"
           justifyContent="center"
@@ -105,7 +118,36 @@ export default function MainPage(): JSX.Element {
         >
           Только короткий треш
         </Flex>
-        </>
+      </>
+    );
+  } else {
+    content = (
+      <>
+        <VideoPlayer
+          src={filteredVideos[currentVideoIndex]?.videoPath}
+          poster={filteredVideos[currentVideoIndex]?.thumbnailPath}
+          onEnd={handleVideoEnd}
+          onLike={handleLike}
+          handleNextVideo={handleNextVideo}
+          handlePrevVideo={handlePrevVideo}
+          handleShare={handleShare}
+        />
+        <Flex
+          as={Checkbox}
+          width="100%"
+          justifyContent="center"
+          bg="rgba(255, 255, 255, 0.5)"
+          color="black"
+          p="2"
+          mt="4"
+          borderRadius="md"
+          isChecked={showShortTrash}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setShowShortTrash(e.target.checked)}
+          colorScheme="blackAlpha"
+        >
+          Только короткий треш
+        </Flex>
+      </>
     );
   }
 
@@ -113,6 +155,7 @@ export default function MainPage(): JSX.Element {
     <Flex direction="column" align="center" justify="center" height="calc(100vh - 8rem)">
       <Flex direction="column" align="center" justify="center" flex="1">
         {content}
+        {/* {user.status === 'logged' && content} */}
       </Flex>
     </Flex>
   );
