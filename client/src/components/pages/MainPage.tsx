@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Flex, Text, Spinner, Checkbox, useToast } from '@chakra-ui/react';
+import React, { useState, useEffect, type CSSProperties } from 'react';
+import { Flex, Text, Spinner, Checkbox, useToast, Box } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { useGetVideosQuery } from '../../redux/apiSlice';
 import { useLikeVideoMutation } from '../../redux/like/likeSlice';
@@ -8,11 +8,24 @@ import type { VideoType } from '../../types/types';
 import type { RootState } from '../../redux/store';
 
 export default function MainPage(): JSX.Element {
+  const textStyles: CSSProperties = {
+    width: '350px',
+    height: '200px',
+    gap: '0px',
+    opacity: '2',
+    fontFamily: 'Rubik Marker Hatch', // Используйте шрифт Google
+    fontWeight: '550',
+    lineHeight: '48px',
+    textAlign: 'left',
+    color: '#ffc100',
+  };
+
   const { data, error, isLoading } = useGetVideosQuery();
   const [likeVideo] = useLikeVideoMutation();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [showShortTrash, setShowShortTrash] = useState(false);
   const [noShortVideos, setNoShortVideos] = useState(false);
+  const [hasWatchedOneVideo, setHasWatchedOneVideo] = useState(false); // New state for tracking video views
 
   const toast = useToast();
   const user = useSelector((state: RootState) => state.auth.user);
@@ -34,6 +47,11 @@ export default function MainPage(): JSX.Element {
   }, [filteredVideos.length]);
 
   const handleVideoEnd = (): void => {
+    if (!userId && !hasWatchedOneVideo) {
+      setHasWatchedOneVideo(true); // Set flag to true after the first video
+      return; // Prevent moving to the next video
+    }
+
     if (currentVideoIndex < filteredVideos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
     }
@@ -49,7 +67,6 @@ export default function MainPage(): JSX.Element {
 
     likeVideo({ userId, videoId })
       .unwrap()
-
       .catch((err) => {
         console.error('Ошибка при лайке видео:', err);
       });
@@ -94,15 +111,23 @@ export default function MainPage(): JSX.Element {
     content = (
       <Flex direction="column" align="center" justify="center" height="100%">
         <Spinner size="xl" />
-        <Text mt={4}>Загрузка...</Text>
+        <Text style={textStyles} mt={4}>
+          Загрузка...
+        </Text>
       </Flex>
     );
   } else if (error) {
-    content = <Text color="white">Ошибка загрузки видео.</Text>;
+    content = (
+      <Text style={textStyles} color="white">
+        Ошибка загрузки видео.
+      </Text>
+    );
   } else if (noShortVideos || filteredVideos.length === 0) {
     content = (
       <>
-        <Text color="white">Нет доступных видео.</Text>
+        <Text style={textStyles} color="white">
+          Нет доступных видео.
+        </Text>
         <Flex
           as={Checkbox}
           width="100%"
@@ -154,8 +179,25 @@ export default function MainPage(): JSX.Element {
   return (
     <Flex direction="column" align="center" justify="center" height="calc(100vh - 8rem)">
       <Flex direction="column" align="center" justify="center" flex="1">
-        {content}
-        {/* {user.status === 'logged' && content} */}
+        {(user.status === 'logged' || user.status === 'admin') && content}
+        {user.status === 'guest' && !hasWatchedOneVideo && (
+          <VideoPlayer
+            src={filteredVideos[currentVideoIndex]?.videoPath}
+            poster={filteredVideos[currentVideoIndex]?.thumbnailPath}
+            onEnd={handleVideoEnd}
+            onLike={handleLike}
+            handleNextVideo={handleNextVideo}
+            handlePrevVideo={handlePrevVideo}
+            handleShare={handleShare}
+            showNextPrev={false}
+            showLike={false}
+          />
+        )}
+        {user.status === 'guest' && hasWatchedOneVideo && (
+          <Text style={textStyles} color="white">
+            Для дальнейшего просмотра видео необходима регистрация
+          </Text>
+        )}
       </Flex>
     </Flex>
   );
