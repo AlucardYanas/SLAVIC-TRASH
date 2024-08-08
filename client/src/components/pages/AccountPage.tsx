@@ -21,13 +21,13 @@ import {
   HStack,
 } from '@chakra-ui/react';
 import { FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import type { AxiosError } from 'axios';
+
 
 import { useUploadVideoMutation } from '../../redux/upload/uploadSlice';
 import { useGetLikedVideosQuery, useUnlikeVideoMutation } from '../../redux/like/likeSlice';
 import VideoPlayer from '../ui/VideoPlayer';
 import type { RootState } from '../../redux/store';
-import type { VideoType } from '../../types/types';
+import type { VideoType, UploadVideoResponse } from '../../types/types';
 
 export default function AccountPage(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -35,7 +35,7 @@ export default function AccountPage(): JSX.Element {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertStatus, setAlertStatus] = useState<'success' | 'error' | 'warning' | 'info'>('info');
-  const [uploadVideo, { isLoading }] = useUploadVideoMutation();
+  const [uploadVideo] = useUploadVideoMutation();
   const toast = useToast();
 
   const userId = useSelector((state: RootState) =>
@@ -55,10 +55,38 @@ export default function AccountPage(): JSX.Element {
 
   const [unlikeVideo] = useUnlikeVideoMutation();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
+
+      const formData = new FormData();
+      formData.append('video', event.target.files[0]);
+      formData.append('title', videoTitle);
+
+      const uploadPromise = uploadVideo(formData).unwrap();
+
+      const toastPromise = async (promise: Promise<UploadVideoResponse>, options: {
+        loading: { title: string, description: string },
+        success: { title: string, description: string },
+        error: { title: string, description: string }
+      }): Promise<void> => toast.promise(promise, options);
+
+      try {
+        await toastPromise(uploadPromise, {
+          loading: { title: 'Видос грузится в облако', description: 'Положди чуть-чуть, братан' },
+          success: { title: 'Ништяк!', description: 'Видос Подгружен, Мы его посмотрим и добавим, если всё ок.' },
+          error: { title: 'Произошла лажа', description: 'Не могу грузануть' },
+        });
+        setSelectedFile(null);
+        setVideoTitle('');
+      } catch (err) {
+        console.error('Ошибка загрузки:', err);
+      }
     }
+  };
+
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    void handleFileChange(event); // Оборачиваем вызов асинхронной функции
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -68,93 +96,6 @@ export default function AccountPage(): JSX.Element {
   const isUndesirableContent = (title: string): boolean => {
     const undesirableKeywords = ['bad', 'offensive', 'undesirable'];
     return undesirableKeywords.some((keyword) => title.toLowerCase().includes(keyword));
-  };
-
-  const handleSubmit = async (): Promise<void> => {
-    if (!selectedFile || !videoTitle || userId === null) {
-      if (!selectedFile && !videoTitle) {
-        toast({
-          title: 'Ошибка!',
-          description: 'Пожалуйста, выберите файл видео и введите название.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      } else if (!selectedFile) {
-        toast({
-          title: 'Ошибка!',
-          description: 'Пожалуйста, выберите файл видео.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      } else if (!videoTitle) {
-        toast({
-          title: 'Ошибка!',
-          description: 'Пожалуйста, введите название видео.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-      setAlertMessage(
-        'Пожалуйста, выберите файл видео, введите название и убедитесь, что вы авторизованы.',
-      );
-      setAlertStatus('info');
-      setShowAlert(true);
-      return;
-    }
-
-    if (isUndesirableContent(videoTitle)) {
-      setAlertMessage('Видео содержит нежелательный контент и не может быть загружено.');
-      setAlertStatus('warning');
-      setShowAlert(true);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('video', selectedFile);
-    formData.append('title', videoTitle);
-
-    try {
-      await uploadVideo(formData).unwrap();
-      setAlertMessage('Видео успешно загружено.');
-      setAlertStatus('success');
-      setSelectedFile(null);
-      setVideoTitle('');
-
-      toast({
-        title: 'Успех!',
-        description: 'Мы его посмотрим и добавим, если всё ок.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (err: unknown) {
-      console.error('Ошибка загрузки:', err);
-
-      toast({
-        title: 'Произошла лажа',
-        description: 'Не могу грузануть(',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-
-      if ((err as AxiosError).status === 400) {
-        setAlertMessage('Видео содержит нежелательный контент и не может быть загружено.');
-        setAlertStatus('warning');
-      } else {
-        setAlertMessage('Не удалось загрузить видео. Пожалуйста, попробуйте еще раз.');
-        setAlertStatus('error');
-      }
-    } finally {
-      setShowAlert(true);
-    }
-  };
-
-  const handleSubmitClick = (): void => {
-    void handleSubmit();
   };
 
   const handleVideoSelect = (index: number): void => {
@@ -244,7 +185,7 @@ export default function AccountPage(): JSX.Element {
         type="file"
         accept="video/*"
         style={{ display: 'none' }}
-        onChange={handleFileChange}
+        onChange={handleFileInputChange}
       />
 
       <Flex direction="column" alignItems="center" mb={4}>
@@ -264,18 +205,7 @@ export default function AccountPage(): JSX.Element {
           background="#DD6B20"
           onClick={() => document.getElementById('fileInput')?.click()}
         >
-          {selectedFile ? 'Видео выбрано' : 'Выбрать видео'}
-        </Button>
-        <Button
-          size="lg"
-          variant="solid"
-          colorScheme="gray"
-          background="#DD6B20"
-          onClick={handleSubmitClick}
-          isLoading={isLoading}
-          mt={2}
-        >
-          Загрузить видео
+          Выбрать видео и загрузить
         </Button>
       </Flex>
 
