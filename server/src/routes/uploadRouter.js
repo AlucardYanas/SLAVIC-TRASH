@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
 const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
@@ -90,6 +91,23 @@ router.post('/', upload.single('video'), async (req, res) => {
     // Загрузка видео в корень бакета и скриншота в папку screenshots
     const videoPublicUrl = await uploadToGCS(videoPath, path.basename(videoPath));
     const thumbnailPublicUrl = await uploadToGCS(thumbnailPath, path.basename(thumbnailPath), 'screenshots'); // Загрузка в папку 'screenshots'
+
+    // Удаление временных файлов
+    fs.unlink(videoPath, (err) => {
+      if (err) {
+        console.error('Ошибка при удалении временного видео файла:', err);
+      } else {
+        console.log('Временный видео файл удален:', videoPath);
+      }
+    });
+
+    fs.unlink(thumbnailPath, (err) => {
+      if (err) {
+        console.error('Ошибка при удалении временного файла превью:', err);
+      } else {
+        console.log('Временный файл превью удален:', thumbnailPath);
+      }
+    });
 
     // Анализ видео с помощью Google Cloud Video Intelligence API
     const gcsUri = `gs://${process.env.GCS_BUCKET_NAME}/${path.basename(videoPath)}`;
