@@ -4,7 +4,7 @@ import React from 'react';
 export default function ErrorPage(): JSX.Element {
   const containerStyles: React.CSSProperties = {
     position: 'relative', // Устанавливаем относительное позиционирование для контейнера
-    height: 'calc(100vh - 114px)', // Высота контейнера с учетом высоты навбара (114px) 
+    height: 'calc(100vh - 114px)', // Высота контейнера с учетом высоты навбара (114px)
     display: 'flex',
     flexDirection: 'column', // Позиционирование содержимого по вертикали
     alignItems: 'center', // Центрирование содержимого по горизонтали

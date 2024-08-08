@@ -48,7 +48,7 @@ export default function MainPage(): JSX.Element {
 
   useEffect(() => {
     const interval = setInterval(() => {
-     void refetch();
+      void refetch();
     }, 3000); // Обновляем данные каждые 30 секунд
 
     return () => clearInterval(interval);

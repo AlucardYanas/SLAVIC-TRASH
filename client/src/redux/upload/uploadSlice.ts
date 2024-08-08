@@ -34,7 +34,10 @@ export const uploadVideoApi = createApi({
         method: 'POST',
         body: { tags },
       }),
-      invalidatesTags: [{ type: 'PendingVideo', id: 'LIST' }, { type: 'Video', id: 'LIST' }],
+      invalidatesTags: [
+        { type: 'PendingVideo', id: 'LIST' },
+        { type: 'Video', id: 'LIST' },
+      ],
     }),
     disapproveVideo: builder.mutation<void, number>({
       query: (id) => ({

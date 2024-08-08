@@ -1,20 +1,11 @@
 import React from 'react';
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  Input,
-  Text,
-  VStack,
-  Link,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, Input, Text, VStack, Link } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 export default function LoginPage(): JSX.Element {
   const { signInHandlerClick } = useAuth();
-  
+
   return (
     <Flex direction="row" align="center" justify="space-between" height="calc(100vh - 8rem)">
       <Flex direction="column" align="center" justify="center" flex="1">
@@ -27,13 +18,7 @@ export default function LoginPage(): JSX.Element {
           p={8}
           borderRadius="md"
         >
-          <Text
-            fontSize="2xl"
-            fontWeight="bold"
-            align="center"
-            mb={4}
-            color="gray.100"
-          >
+          <Text fontSize="2xl" fontWeight="bold" align="center" mb={4} color="gray.100">
             Войти
           </Text>
           <VStack spacing={4}>
@@ -85,7 +70,7 @@ export default function LoginPage(): JSX.Element {
               color="white"
             >
               Еще не с нами?{' '}
-              <Link as={NavLink} to="/signup" color="orange.500" _hover={{ color: "orange.700" }}>
+              <Link as={NavLink} to="/signup" color="orange.500" _hover={{ color: 'orange.700' }}>
                 Зарегаться
               </Link>
             </Text>

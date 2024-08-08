@@ -34,8 +34,8 @@ const upload = multer({ storage: storageConfig });
 const processVideo = (videoPath, thumbnailPath) =>
   new Promise((resolve, reject) => {
     ffmpeg(videoPath)
-      .on('filenames', filenames => {
-        console.log('Скриншоты будут сохранены как: ' + filenames.join(', '));
+      .on('filenames', (filenames) => {
+        console.log(`Скриншоты будут сохранены как: ${filenames.join(', ')}`);
       })
       .on('end', () => {
         console.log('Скриншот создан');
@@ -47,7 +47,7 @@ const processVideo = (videoPath, thumbnailPath) =>
           resolve({ thumbnailPath, length });
         });
       })
-      .on('error', err => {
+      .on('error', (err) => {
         console.error(err);
         reject(err);
       })
@@ -90,7 +90,11 @@ router.post('/', upload.single('video'), async (req, res) => {
 
     // Загрузка видео в корень бакета и скриншота в папку screenshots
     const videoPublicUrl = await uploadToGCS(videoPath, path.basename(videoPath));
-    const thumbnailPublicUrl = await uploadToGCS(thumbnailPath, path.basename(thumbnailPath), 'screenshots'); // Загрузка в папку 'screenshots'
+    const thumbnailPublicUrl = await uploadToGCS(
+      thumbnailPath,
+      path.basename(thumbnailPath),
+      'screenshots',
+    ); // Загрузка в папку 'screenshots'
 
     // Удаление временных файлов
     fs.unlink(videoPath, (err) => {
@@ -113,7 +117,12 @@ router.post('/', upload.single('video'), async (req, res) => {
     const gcsUri = `gs://${process.env.GCS_BUCKET_NAME}/${path.basename(videoPath)}`;
     const [operation] = await videoIntelligenceClient.annotateVideo({
       inputUri: gcsUri,
-      features: ['LABEL_DETECTION', 'EXPLICIT_CONTENT_DETECTION', 'TEXT_DETECTION', 'SPEECH_TRANSCRIPTION'],
+      features: [
+        'LABEL_DETECTION',
+        'EXPLICIT_CONTENT_DETECTION',
+        'TEXT_DETECTION',
+        'SPEECH_TRANSCRIPTION',
+      ],
       videoContext: {
         speechTranscriptionConfig: {
           languageCode: 'en-US', // Вы можете изменить это на нужный вам язык
@@ -124,8 +133,11 @@ router.post('/', upload.single('video'), async (req, res) => {
     const [response] = await operation.promise();
 
     // Проверка на наличие нежелательного контента
-    const explicitContentAnnotation = response.annotationResults[0]?.explicitAnnotation || { frames: [] };
-    const explicitLikelihood = explicitContentAnnotation.frames.map((frame) => frame.pornographyLikelihood);
+    const explicitContentAnnotation = response.annotationResults[0]
+      ?.explicitAnnotation || { frames: [] };
+    const explicitLikelihood = explicitContentAnnotation.frames.map(
+      (frame) => frame.pornographyLikelihood,
+    );
 
     if (explicitLikelihood.some((likelihood) => likelihood >= 3)) {
       console.log('Видео содержит нежелательный контент');
@@ -137,10 +149,15 @@ router.post('/', upload.single('video'), async (req, res) => {
     const extractedTexts = textAnnotations.map((text) => text.text);
 
     // Транскрибирование аудио в текст
-    const speechTranscriptions = response.annotationResults[0]?.speechTranscriptions || [];
-    const transcribedText = speechTranscriptions.map(transcription =>
-      transcription.alternatives.map(alternative => alternative.transcript).join('\n')
-    ).join('\n\n');
+    const speechTranscriptions =
+      response.annotationResults[0]?.speechTranscriptions || [];
+    const transcribedText = speechTranscriptions
+      .map((transcription) =>
+        transcription.alternatives
+          .map((alternative) => alternative.transcript)
+          .join('\n'),
+      )
+      .join('\n\n');
 
     // Сохранение информации о видео в базе данных
     const video = await Video.create({

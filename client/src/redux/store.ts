@@ -15,7 +15,7 @@ export const store = configureStore({
     getDefaultMiddleware().concat(
       videosApi.middleware,
       likeApi.middleware, // Используем middleware нового слайса
-      uploadVideoApi.middleware
+      uploadVideoApi.middleware,
     ),
 });
 

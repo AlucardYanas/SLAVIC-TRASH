@@ -270,19 +270,19 @@ export default function AccountPage(): JSX.Element {
 
       <Flex direction="column" align="center" justify="center">
         <Text
-         fontSize="4xl"
-         mb={4}
-         width="620px"
-         height="48px"
-         gap="0px"
-         opacity="1"
-         color="yellow"
-         fontFamily="Rubik Marker Hatch"
-         fontWeight="550"
-         textAlign="center"
-         as="b"
-         size="48px"
-         lineHeight="48px"
+          fontSize="4xl"
+          mb={4}
+          width="620px"
+          height="48px"
+          gap="0px"
+          opacity="1"
+          color="yellow"
+          fontFamily="Rubik Marker Hatch"
+          fontWeight="550"
+          textAlign="center"
+          as="b"
+          size="48px"
+          lineHeight="48px"
         >
           Лайкосы
         </Text>
@@ -316,8 +316,14 @@ export default function AccountPage(): JSX.Element {
                       cursor="pointer"
                     />
                   </AspectRatio>
-                  <Text fontFamily="Rubik Marker Hatch"
-                  color='yellow' noOfLines={2} mt={2} fontSize="lg" fontWeight="medium">
+                  <Text
+                    fontFamily="Rubik Marker Hatch"
+                    color="yellow"
+                    noOfLines={2}
+                    mt={2}
+                    fontSize="lg"
+                    fontWeight="medium"
+                  >
                     {video.title}
                   </Text>
                   <IconButton
@@ -354,14 +360,14 @@ export default function AccountPage(): JSX.Element {
       </Flex>
 
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <ModalOverlay/>
+        <ModalOverlay />
         <ModalContent maxW="100%" w="auto">
           <ModalHeader>Просмотр видео</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {likedVideos && likedVideos.length > 0 && (
-              <Box  maxW="100%" w="100%">
-                <VideoPlayer 
+              <Box maxW="100%" w="100%">
+                <VideoPlayer
                   src={likedVideos[currentVideoIndex].videoPath}
                   poster={likedVideos[currentVideoIndex].thumbnailPath}
                   onEnd={handleNextVideo}
